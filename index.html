@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TON Blast - Telegram Game</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Arial', sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; padding: 20px;
+        }
+        .container { 
+            max-width: 400px; margin: 0 auto; 
+            background: white; padding: 20px;
+            border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .header { 
+            text-align: center; margin-bottom: 20px;
+            background: linear-gradient(45deg, #0088cc, #00cc88);
+            color: white; padding: 15px;
+            border-radius: 15px; margin: -20px -20px 20px -20px;
+        }
+        .game-area { 
+            width: 100%; height: 300px; 
+            border: 3px solid #0088cc; 
+            border-radius: 15px; background: #1a1a2e;
+            position: relative; overflow: hidden; display: none;
+            margin: 15px 0;
+        }
+        .ton-coin {
+            width: 60px; height: 60px;
+            background: radial-gradient(circle at 30% 30%, #0088cc, #0055aa);
+            border-radius: 50%; position: absolute;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: bold; font-size: 14px;
+            border: 2px solid #00aaff;
+            box-shadow: 0 0 15px #0088cc;
+            cursor: pointer; transition: all 0.2s;
+            animation: appear 0.3s ease-out;
+        }
+        .ton-coin::before { content: "TON"; }
+        @keyframes appear {
+            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        .ton-coin:hover { transform: scale(1.1); }
+        .btn { 
+            width: 100%; padding: 15px; margin: 10px 0;
+            background: linear-gradient(45deg, #0088cc, #00cc88);
+            color: white; border: none; border-radius: 10px;
+            font-size: 16px; font-weight: bold; cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn:active { transform: translateY(0); }
+        .stats { 
+            display: flex; justify-content: space-between;
+            margin: 15px 0; font-size: 18px; font-weight: bold;
+        }
+        .section { 
+            background: #f8f9fa; padding: 15px; 
+            border-radius: 10px; margin: 10px 0; display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎮 TON BLAST</h1>
+            <div id="userInfo">Загрузка...</div>
+        </div>
+
+        <div id="walletSection" class="section">
+            <button class="btn" onclick="connectWallet()">🔗 Connect TON Wallet</button>
+        </div>
+
+        <div id="betSection" class="section">
+            <h3>💰 Выбери ставку:</h3>
+            <button class="btn" onclick="placeBet(1)">🎯 1 TON</button>
+            <button class="btn" onclick="placeBet(2)">🎯 2 TON</button>
+            <button class="btn" onclick="placeBet(5)">🎯 5 TON</button>
+        </div>
+
+        <div class="stats">
+            <div>⏱️ <span id="timer">30s</span></div>
+            <div>🎯 <span id="score">0</span></div>
+            <div>💰 <span id="bet">0 TON</span></div>
+        </div>
+
+        <div id="gameArea" class="game-area"></div>
+
+        <div id="resultSection" class="section">
+            <h2 id="resultText"></h2>
+            <button class="btn" onclick="resetGame()">🔄 Играть снова</button>
+        </div>
+    </div>
+
+    <script>
+        // Telegram Web App
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.enableClosingConfirmation();
+
+        // Игровые переменные
+        let score = 0, currentBet = 0, timeLeft = 30;
+        let gameInterval, timerInterval;
+
+        // Элементы
+        const elements = {
+            wallet: document.getElementById('walletSection'),
+            bet: document.getElementById('betSection'),
+            game: document.getElementById('gameArea'),
+            result: document.getElementById('resultSection'),
+            timer: document.getElementById('timer'),
+            score: document.getElementById('score'),
+            betDisplay: document.getElementById('bet'),
+            resultText: document.getElementById('resultText'),
+            userInfo: document.getElementById('userInfo')
+        };
+
+        // Инициализация
+        function init() {
+            if (tg.initDataUnsafe.user) {
+                const user = tg.initDataUnsafe.user;
+                elements.userInfo.textContent = `👤 ${user.first_name}`;
+            }
+            elements.wallet.style.display = 'block';
+        }
+
+        // Подключение кошелька
+        function connectWallet() {
+            elements.wallet.style.display = 'none';
+            elements.bet.style.display = 'block';
+        }
+
+        // Ставка
+        function placeBet(amount) {
+            currentBet = amount;
+            elements.bet.style.display = 'none';
+            elements.game.style.display = 'block';
+            elements.betDisplay.textContent = amount + ' TON';
+            startGame();
+        }
+
+        // Запуск игры
+        function startGame() {
+            score = 0; timeLeft = 30;
+            elements.score.textContent = '0';
+            elements.timer.textContent = '30s';
+            
+            gameInterval = setInterval(createCoin, 800);
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        // Таймер
+        function updateTimer() {
+            timeLeft--;
+            elements.timer.textContent = timeLeft + 's';
+            if (timeLeft <= 0) endGame();
+        }
+
+        // Создание монеты
+        function createCoin() {
+            const coin = document.createElement('div');
+            coin.className = 'ton-coin';
+            
+            const x = Math.random() * (elements.game.offsetWidth - 60);
+            const y = Math.random() * (elements.game.offsetHeight - 60);
+            coin.style.left = x + 'px';
+            coin.style.top = y + 'px';
+            
+            coin.onclick = function() {
+                score++;
+                elements.score.textContent = score;
+                this.style.background = 'radial-gradient(circle, #00ff88, #00cc66)';
+                setTimeout(() => this.remove(), 150);
+            };
+            
+            setTimeout(() => {
+                if (coin.parentNode) {
+                    coin.style.opacity = '0.5';
+                    setTimeout(() => coin.remove(), 500);
+                }
+            }, 3000);
+            
+            elements.game.appendChild(coin);
+        }
+
+        // Завершение игры
+        function endGame() {
+            clearInterval(gameInterval);
+            clearInterval(timerInterval);
+            
+            const win = (currentBet + score * currentBet * 0.2).toFixed(2);
+            elements.resultText.innerHTML = `
+                🎯 Очков: ${score}<br>
+                💰 Выигрыш: ${win} TON<br>
+                📊 Комиссия: ${(win * 0.05).toFixed(2)} TON
+            `;
+            elements.result.style.display = 'block';
+        }
+
+        // Рестарт
+        function resetGame() {
+            elements.result.style.display = 'none';
+            elements.game.style.display = 'none';
+            elements.bet.style.display = 'block';
+            elements.game.innerHTML = '';
+        }
+
+        // Запуск
+        init();
+    </script>
+</body>
+</html>
