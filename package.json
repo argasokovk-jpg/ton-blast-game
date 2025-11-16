@@ -1,0 +1,16 @@
+{
+  "name": "ton-blast-game",
+  "version": "1.0.0",
+  "description": "TON Blast Telegram Game",
+  "main": "index.html",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  },
+  "engines": {
+    "node": ">=18.x"
+  }
+}
