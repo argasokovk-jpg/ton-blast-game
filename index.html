@@ -12,7 +12,7 @@
         }
         
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0088CC 0%, #0066AA 100%);
             font-family: 'Arial', sans-serif;
             color: white;
             overflow: hidden;
@@ -23,6 +23,89 @@
             position: relative;
             width: 100%;
             height: 100vh;
+        }
+        
+        /* TON СТАРТОВЫЙ ЭКРАН */
+        #start-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0088CC 0%, #0066AA 50%, #004477 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .ton-logo {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #FFFFFF, #88DDFF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(136, 221, 255, 0.5);
+        }
+        
+        .game-title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .start-btn {
+            background: linear-gradient(45deg, #00A3FF, #0088CC);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 25px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 20px 0;
+            box-shadow: 0 8px 25px rgba(0, 131, 255, 0.4);
+            transition: all 0.3s ease;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .start-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(0, 131, 255, 0.6);
+        }
+        
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            max-width: 400px;
+        }
+        
+        .feature {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-width: 120px;
+        }
+        
+        .feature-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        /* ИГРОВОЙ ИНТЕРФЕЙС */
+        #game-ui {
+            display: none;
         }
         
         #ui-overlay {
@@ -71,18 +154,86 @@
             box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
         }
         
-        .wallet-btn:disabled {
-            background: #6c757d;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
         #game-stats {
             margin-top: 10px;
             font-size: 12px;
             line-height: 1.4;
         }
         
+        /* TON ШАРИКИ */
+        .coin {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle at 30% 30%, #0088CC, #0066AA, #004477);
+            border-radius: 50%;
+            animation: float 3s infinite ease-in-out, glow 2s infinite alternate;
+            box-shadow: 
+                0 0 25px rgba(0, 136, 204, 0.8),
+                inset 0 0 25px rgba(255, 255, 255, 0.3),
+                0 0 0 3px rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+        }
+        
+        .coin::before {
+            content: "💎";
+            font-size: 28px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+        
+        .coin:hover {
+            transform: scale(1.15);
+            box-shadow: 
+                0 0 35px rgba(0, 136, 204, 1),
+                inset 0 0 30px rgba(255, 255, 255, 0.4),
+                0 0 0 4px rgba(255, 255, 255, 0.7);
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+        
+        @keyframes glow {
+            0% { box-shadow: 0 0 25px rgba(0, 136, 204, 0.8); }
+            100% { box-shadow: 0 0 35px rgba(0, 136, 204, 1); }
+        }
+        
+        /* ИГРОВАЯ СТАТИСТИКА */
+        #score {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        #timer {
+            position: absolute;
+            top: 90px;
+            left: 20px;
+            font-size: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 12px 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* МОДАЛЬНОЕ ОКНО ВЫВОДА */
         #withdraw-modal {
             display: none;
             position: fixed;
@@ -93,99 +244,179 @@
             padding: 30px;
             border-radius: 20px;
             z-index: 1000;
-            border: 2px solid #007bff;
+            border: 3px solid #0088CC;
             backdrop-filter: blur(20px);
             color: white;
             text-align: center;
-            min-width: 300px;
+            min-width: 320px;
+            box-shadow: 0 0 50px rgba(0, 136, 204, 0.5);
         }
         
         #withdraw-modal h3 {
-            margin-bottom: 15px;
-            color: #007bff;
+            margin-bottom: 20px;
+            color: #00A3FF;
+            font-size: 24px;
         }
         
         .modal-btn {
             background: linear-gradient(45deg, #28a745, #20c997);
             color: white;
             border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
+            padding: 15px 25px;
+            border-radius: 12px;
             cursor: pointer;
             font-size: 16px;
+            font-weight: bold;
             margin: 10px 5px;
             transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
         
         .modal-btn.cancel {
             background: linear-gradient(45deg, #dc3545, #c82333);
         }
         
-        .coin {
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            background: radial-gradient(circle, #ffd700, #ff6b00);
-            border-radius: 50%;
-            animation: glow 2s infinite alternate;
-            box-shadow: 0 0 20px #ffd700;
+        .modal-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(40, 167, 69, 0.4);
         }
         
-        @keyframes glow {
-            from { transform: scale(1); }
-            to { transform: scale(1.1); }
-        }
-        
-        #score {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            font-size: 24px;
-            font-weight: bold;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 10px 20px;
-            border-radius: 10px;
-        }
-        
-        #timer {
-            position: absolute;
-            top: 70px;
-            left: 20px;
-            font-size: 20px;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 8px 15px;
-            border-radius: 10px;
+        /* МОБИЛЬНЫЕ СТИЛИ */
+        @media (max-width: 768px) {
+            #wallet-panel {
+                position: relative;
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                width: calc(100% - 20px);
+                padding: 15px;
+                font-size: 16px;
+            }
+            
+            #wallet-info {
+                font-size: 16px;
+                margin-bottom: 10px;
+            }
+            
+            .wallet-btn {
+                padding: 14px 18px;
+                font-size: 16px;
+                margin: 6px 0;
+            }
+            
+            #game-stats {
+                font-size: 14px;
+                line-height: 1.5;
+            }
+            
+            #score, #timer {
+                position: relative;
+                top: auto;
+                left: auto;
+                display: inline-block;
+                margin: 8px;
+                font-size: 18px;
+                padding: 12px 18px;
+            }
+            
+            .coin {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .coin::before {
+                font-size: 32px;
+            }
+            
+            #withdraw-modal {
+                width: 90%;
+                max-width: 350px;
+                padding: 25px;
+            }
+            
+            .modal-btn {
+                padding: 16px 22px;
+                font-size: 16px;
+                display: block;
+                width: 100%;
+                margin: 10px 0;
+            }
+            
+            .ton-logo {
+                font-size: 36px;
+            }
+            
+            .game-title {
+                font-size: 24px;
+            }
+            
+            .start-btn {
+                padding: 18px 35px;
+                font-size: 18px;
+            }
         }
     </style>
 </head>
 <body>
     <div id="game-container">
-        <!-- Игровое поле -->
-        <div id="score">💰 Монеты: <span id="coins-count">0</span></div>
-        <div id="timer">⏱ Время: <span id="time-left">30</span>s</div>
-        
-        <!-- Панель кошелька -->
-        <div id="wallet-panel">
-            <div id="wallet-info">🔑 Кошелек не подключен</div>
-            <button class="wallet-btn" onclick="connectWallet()">Connect TON Wallet</button>
-            <div id="game-stats">
-                <div>🎮 Игровых монет: <span id="game-coins">0</span></div>
-                <div>💰 Доступно к выводу: <span id="withdraw-amount">0</span> TON</div>
-                <button class="wallet-btn" onclick="showWithdrawModal()" style="width: 100%; margin-top: 8px;">
-                    💸 Вывести средства
-                </button>
+        <!-- СТАРТОВЫЙ ЭКРАН -->
+        <div id="start-screen">
+            <div class="ton-logo">⚡ TON</div>
+            <div class="game-title">BLAST GAME</div>
+            
+            <button class="start-btn" onclick="startGame()">
+                🚀 НАЧАТЬ ИГРУ
+            </button>
+            
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">💎</div>
+                    <div>Собирай TON</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">💰</div>
+                    <div>Выводи на кошелек</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⚡</div>
+                    <div>Быстрые выплаты</div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px; font-size: 14px; opacity: 0.8;">
+                💰 1000 монет = 45 TON<br>
+                ⚡ Комиссия: 10%
             </div>
         </div>
         
-        <!-- Модальное окно вывода -->
-        <div id="withdraw-modal">
-            <h3>💸 Вывод средств</h3>
-            <p>Ваш баланс: <span id="withdraw-balance">0</span> игровых монет</p>
-            <p>Курс: 1000 монет = 45 TON</p>
-            <p style="color: #ff6b6b; font-weight: bold;">Комиссия: 10% (5 TON)</p>
-            <p style="color: #51cf66; font-weight: bold;">Вы получите: 45 TON</p>
-            <button class="modal-btn" onclick="processWithdrawal()">✅ Вывести 45 TON</button>
-            <button class="modal-btn cancel" onclick="hideWithdrawModal()">❌ Отмена</button>
+        <!-- ИГРОВОЙ ИНТЕРФЕЙС -->
+        <div id="game-ui">
+            <div id="score">💎 Монеты: <span id="coins-count">0</span></div>
+            <div id="timer">⏱ Время: <span id="time-left">30</span>s</div>
+            
+            <!-- Панель кошелька -->
+            <div id="wallet-panel">
+                <div id="wallet-info">🔑 Кошелек не подключен</div>
+                <button class="wallet-btn" onclick="connectWallet()">Connect TON Wallet</button>
+                <div id="game-stats">
+                    <div>🎮 Игровых монет: <span id="game-coins">0</span></div>
+                    <div>💰 Доступно к выводу: <span id="withdraw-amount">0</span> TON</div>
+                    <button class="wallet-btn" onclick="showWithdrawModal()" style="width: 100%; margin-top: 10px;">
+                        💸 Вывести средства
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Модальное окно вывода -->
+            <div id="withdraw-modal">
+                <h3>💸 Вывод средств</h3>
+                <p>Ваш баланс: <span id="withdraw-balance">0</span> игровых монет</p>
+                <p>Курс: 1000 монет = 45 TON</p>
+                <p style="color: #ff6b6b; font-weight: bold;">Комиссия: 10% (5 TON)</p>
+                <p style="color: #51cf66; font-weight: bold;">Вы получите: 45 TON</p>
+                <button class="modal-btn" onclick="processWithdrawal()">✅ Вывести 45 TON</button>
+                <button class="modal-btn cancel" onclick="hideWithdrawModal()">❌ Отмена</button>
+            </div>
         </div>
     </div>
 
@@ -199,6 +430,7 @@
         let gameCoins = 0;
         let gameTimer = 30;
         let timerInterval;
+        let gameStarted = false;
         
         // Инициализация TON Connect
         function initTonConnect() {
@@ -272,6 +504,7 @@
         async function processWithdrawal() {
             if (!playerWallet || gameCoins < 1000) return;
             
+            // ЗАМЕНИ ЭТОТ АДРЕС НА СВОЙ TON КОШЕЛЕК!
             const YOUR_WALLET = "UQAWQh7zmJcdgsnBzwMwQCVaW_chq_xid7TO2TmSWxnueN_W";
             
             const transaction = {
@@ -303,6 +536,10 @@
         
         // ========== ИГРОВАЯ ЛОГИКА ==========
         function startGame() {
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('game-ui').style.display = 'block';
+            
+            gameStarted = true;
             gameCoins = 0;
             gameTimer = 30;
             updateGameUI();
@@ -326,46 +563,47 @@
         function createCoins() {
             const container = document.getElementById('game-container');
             
-            // Создаем 10 монет
-            for (let i = 0; i < 10; i++) {
+            // Создаем 8 TON шариков
+            for (let i = 0; i < 8; i++) {
                 setTimeout(() => {
-                    const coin = document.createElement('div');
-                    coin.className = 'coin';
-                    coin.style.left = Math.random() * (window.innerWidth - 50) + 'px';
-                    coin.style.top = Math.random() * (window.innerHeight - 50) + 'px';
-                    
-                    coin.onclick = function() {
-                        collectCoin(this);
-                    };
-                    
-                    container.appendChild(coin);
-                }, i * 500);
+                    createSingleCoin();
+                }, i * 400);
             }
-        }
-        
-        function collectCoin(coinElement) {
-            coinElement.remove();
-            gameCoins += 100;
-            updateGameUI();
-            
-            // Создаем новую монету
-            setTimeout(() => {
-                createSingleCoin();
-            }, 300);
         }
         
         function createSingleCoin() {
             const container = document.getElementById('game-container');
             const coin = document.createElement('div');
             coin.className = 'coin';
-            coin.style.left = Math.random() * (window.innerWidth - 50) + 'px';
-            coin.style.top = Math.random() * (window.innerHeight - 50) + 'px';
+            
+            // Случайная позиция с отступами от краев
+            const maxX = window.innerWidth - 80;
+            const maxY = window.innerHeight - 80;
+            coin.style.left = Math.random() * maxX + 20 + 'px';
+            coin.style.top = Math.random() * maxY + 20 + 'px';
             
             coin.onclick = function() {
                 collectCoin(this);
             };
             
             container.appendChild(coin);
+        }
+        
+        function collectCoin(coinElement) {
+            // Анимация сбора
+            coinElement.style.transform = 'scale(1.3)';
+            coinElement.style.opacity = '0.7';
+            
+            setTimeout(() => {
+                coinElement.remove();
+                gameCoins += 100;
+                updateGameUI();
+                
+                // Создаем новую монету
+                if (gameStarted) {
+                    createSingleCoin();
+                }
+            }, 150);
         }
         
         function updateGameUI() {
@@ -375,13 +613,23 @@
         }
         
         function endGame() {
-            alert(`🎮 Игра окончена!\nВы собрали: ${gameCoins} монет\nДо вывода осталось: ${1000 - gameCoins} монет`);
+            gameStarted = false;
+            alert(`🎮 Игра окончена!\n\n💎 Вы собрали: ${gameCoins} монет\n💰 До вывода осталось: ${Math.max(0, 1000 - gameCoins)} монет\n\n🚀 Нажмите OK чтобы играть снова!`);
+            
+            // Очищаем поле
+            const coins = document.querySelectorAll('.coin');
+            coins.forEach(coin => coin.remove());
+            
+            // Перезапускаем игру
+            setTimeout(() => {
+                document.getElementById('start-screen').style.display = 'flex';
+                document.getElementById('game-ui').style.display = 'none';
+            }, 1000);
         }
         
-        // ========== ЗАПУСК ИГРЫ ==========
+        // ========== ЗАПУСК ПРИЛОЖЕНИЯ ==========
         window.onload = function() {
             initTonConnect();
-            startGame();
         };
     </script>
 </body>
