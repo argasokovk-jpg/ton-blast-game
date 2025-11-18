@@ -45,6 +45,15 @@
             font-size: 16px;
             opacity: 0.9;
         }
+
+        #owner-profit {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            margin-top: 10px;
+            font-size: 14px;
+            display: inline-block;
+        }
         
         .content-section {
             padding: 20px;
@@ -124,6 +133,10 @@
         
         .tg-button.danger {
             background: linear-gradient(45deg, #ff4757, #ff3838);
+        }
+
+        .tg-button.success {
+            background: linear-gradient(45deg, #00b894, #00a085);
         }
         
         /* Игровая область */
@@ -256,6 +269,15 @@
             margin: 10px 0;
             text-align: center;
         }
+
+        .commission-info {
+            background: linear-gradient(135deg, #fff9e6, #ffeaa7);
+            border: 2px solid #fdcb6e;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+        }
         
         /* Адаптивность */
         @media (max-width: 480px) {
@@ -303,6 +325,7 @@
         <div class="tg-header">
             <h1>🎮 TON Blast Game</h1>
             <div id="user-info">Загрузка...</div>
+            <div id="owner-profit" style="display: none;"></div>
         </div>
         
         <div class="content-section">
@@ -327,6 +350,15 @@
                             💵 <span id="ton-balance">0</span> TON
                         </div>
                     </div>
+
+                    <div class="commission-info">
+                        <h4>⚡ Система выплат</h4>
+                        <p style="font-size: 14px; margin: 5px 0;">
+                            💰 1000 монет = 45 TON<br>
+                            🎯 Комиссия: 10%<br>
+                            📊 Вы получите: 40.5 TON
+                        </p>
+                    </div>
                     
                     <h3>🎯 Выберите ставку</h3>
                     <div class="bet-buttons">
@@ -337,7 +369,7 @@
                     </div>
                     
                     <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button class="tg-button secondary" onclick="showWithdrawModal()" style="flex: 1;">
+                        <button class="tg-button success" onclick="showWithdrawModal()" style="flex: 1;">
                             💸 Вывести
                         </button>
                         <button class="tg-button danger" onclick="disconnectWallet()" style="flex: 1;">
@@ -422,6 +454,43 @@
         const resultDetails = document.getElementById('result-details');
         const leaderboardElement = document.getElementById('leaderboard');
         const afterConnect = document.getElementById('after-connect');
+        const ownerProfitElement = document.getElementById('owner-profit');
+
+        // Трекер твоих доходов
+        const profitTracker = {
+            totalCommission: 0,
+            totalWithdrawals: 0,
+            
+            addProfit: function(commission) {
+                this.totalCommission += commission;
+                this.totalWithdrawals++;
+                this.saveToLocalStorage();
+                this.displayProfit();
+            },
+            
+            displayProfit: function() {
+                console.log(`💰 Ваша прибыль: ${this.totalCommission.toFixed(2)} TON (с ${this.totalWithdrawals} выводов)`);
+                
+                if (ownerProfitElement) {
+                    ownerProfitElement.style.display = 'inline-block';
+                    ownerProfitElement.innerHTML = `👑 Прибыль: ${this.totalCommission.toFixed(2)} TON`;
+                }
+            },
+            
+            saveToLocalStorage: function() {
+                localStorage.setItem('tonBlastOwnerProfit', JSON.stringify({
+                    commission: this.totalCommission,
+                    withdrawals: this.totalWithdrawals
+                }));
+            },
+            
+            loadFromLocalStorage: function() {
+                const saved = JSON.parse(localStorage.getItem('tonBlastOwnerProfit') || '{"commission":0,"withdrawals":0}');
+                this.totalCommission = saved.commission;
+                this.totalWithdrawals = saved.withdrawals;
+                this.displayProfit();
+            }
+        };
 
         // Инициализация TON Connect
         function initTonConnect() {
@@ -488,6 +557,7 @@
                 
                 gameStats.style.display = 'block';
                 loadLeaderboard();
+                profitTracker.loadFromLocalStorage();
             }
         }
 
@@ -495,7 +565,7 @@
         function updateBalanceDisplay() {
             document.getElementById('game-coins-balance').textContent = gameCoins;
             document.getElementById('ton-balance').textContent = userBalance.toFixed(2);
-            document.getElementById('withdraw-amount').textContent = Math.floor(gameCoins / 1000) * 45;
+            document.getElementById('withdraw-amount').textContent = Math.floor(gameCoins / 1000) * 40.5;
         }
 
         // Размещение ставки
@@ -607,7 +677,7 @@
         // Обновление игрового UI
         function updateGameUI() {
             document.getElementById('coins-count').textContent = score;
-            document.getElementById('withdraw-amount').textContent = Math.floor(gameCoins / 1000) * 45;
+            document.getElementById('withdraw-amount').textContent = Math.floor(gameCoins / 1000) * 40.5;
         }
 
         // Завершение игры
@@ -649,7 +719,7 @@
             updateWalletInfo();
         }
 
-        // Система вывода
+        // Система вывода с комиссией 10%
         function showWithdrawModal() {
             const availableTON = Math.floor(gameCoins / 1000) * 45;
             if (availableTON === 0) {
@@ -657,12 +727,68 @@
                 return;
             }
             
-            if (confirm(`Вывести ${availableTON} TON?\n\nКурс: 1000 монет = 45 TON\nКомиссия: 10%`)) {
-                userBalance += availableTON;
-                gameCoins = gameCoins % 1000; // Оставляем остаток монет
+            // Расчет с комиссией
+            const commission = availableTON * 0.10; // 10% комиссия тебе
+            const playerGets = availableTON - commission;
+            
+            if (confirm(
+                `💸 ЗАПРОС НА ВЫВОД\n\n` +
+                `💰 Ваши монеты: ${gameCoins}\n` +
+                `📊 Курс: 1000 монет = 45 TON\n` +
+                `🎯 К получению: ${playerGets} TON\n` +
+                `⚡ Комиссия платформы: ${commission} TON (10%)\n\n` +
+                `Подтвердить вывод?`
+            )) {
+                processRealWithdrawal(playerGets, commission);
+            }
+        }
+
+        // Реальный вывод через TON Connect
+        async function processRealWithdrawal(playerAmount, commission) {
+            if (!playerWallet) {
+                alert('❌ Кошелек не подключен');
+                return;
+            }
+            
+            // ТВОЙ КОШЕЛЕК для комиссии
+            const YOUR_WALLET = "UQAWQh7zmJcdgsnBzwMwQCVaW_chq_xid7TO2TmSWxnueN_W";
+            
+            try {
+                const transaction = {
+                    validUntil: Math.floor(Date.now() / 1000) + 600, // 10 минут
+                    messages: [
+                        {
+                            address: YOUR_WALLET, // КОМИССИЯ тебе
+                            amount: (commission * 1000000000).toString() // в нанокенах
+                        },
+                        {
+                            address: playerWallet.account.address, // Игроку
+                            amount: (playerAmount * 1000000000).toString()
+                        }
+                    ]
+                };
+                
+                // Отправка транзакции
+                const result = await tonConnectUI.sendTransaction(transaction);
+                
+                // Обновляем баланс игрока
+                gameCoins = gameCoins % 1000; // Оставляем остаток
                 localStorage.setItem('tonBlastGameCoins', gameCoins.toString());
+                userBalance += playerAmount; // Игрок получает свой выигрыш
+                
+                // Добавляем комиссию в твою прибыль
+                profitTracker.addProfit(commission);
+                
                 updateBalanceDisplay();
-                alert('✅ Запрос на вывод отправлен! Средства поступят в течение 24 часов.');
+                
+                alert(`✅ Вывод успешен!\n\n` +
+                      `📤 Игрок получил: ${playerAmount} TON\n` +
+                      `💰 Ваша комиссия: ${commission} TON\n` +
+                      `💎 Осталось монет: ${gameCoins}`);
+                      
+            } catch (error) {
+                console.error('Withdrawal error:', error);
+                alert('❌ Ошибка вывода: ' + error.message);
             }
         }
 
@@ -712,6 +838,7 @@
             initTonConnect();
             loadLeaderboard();
             updateBalanceDisplay();
+            profitTracker.loadFromLocalStorage();
         };
     </script>
 </body>
