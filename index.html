@@ -492,11 +492,18 @@
             }
         };
 
-        // Инициализация TON Connect
+        // Инициализация TON Connect с готовой иконкой
         function initTonConnect() {
             try {
+                // Inline манифест с готовой иконкой
+                const manifest = {
+                    "url": "https://ton-blast-game.vercel.app",
+                    "name": "TON Blast Game",
+                    "iconUrl": "https://raw.githubusercontent.com/ton-community/tutorials/main/03-client/test-dapp/icon.png"
+                };
+                
                 tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-                    manifestUrl: 'https://ton-blast-game.vercel.app/tonconnect-manifest.json'
+                    manifest: manifest
                 });
                 
                 tonConnectUI.connectionRestored.then((value) => {
@@ -824,12 +831,13 @@
 
         // Поделиться результатом
         function shareResult() {
-            if (tg.isVersionAtLeast('6.1')) {
-                tg.shareMessage({
-                    text: `🎮 Я собрал ${score} монет в TON Blast Game и выиграл ${(currentBet * (1 + score/1000)).toFixed(2)} TON! Сможешь побить мой рекорд? 🏆\n\nПрисоединяйся: https://t.me/tonblast_bot`
-                });
+            const shareText = `🎮 Я собрал ${score} монет в TON Blast Game и выиграл ${(currentBet * (1 + score/1000)).toFixed(2)} TON! Сможешь побить мой рекорд? 🏆\n\nПрисоединяйся: https://t.me/TONBlastGame_bot`;
+            
+            if (navigator.share) {
+                navigator.share({ text: shareText });
             } else {
-                copyReferralLink();
+                navigator.clipboard.writeText(shareText);
+                alert('✅ Результат скопирован!');
             }
         }
 
