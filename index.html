@@ -426,7 +426,6 @@
         // Инициализация Telegram Web App
         let tg = window.Telegram.WebApp;
         tg.expand();
-        tg.enableClosingConfirmation();
         
         // Показываем информацию о пользователе
         if (tg.initDataUnsafe.user) {
@@ -443,7 +442,7 @@
         let playerWallet = null;
         let tonConnectUI;
         let currentBet = 0;
-        let userBalance = 50; // Начальный баланс для демо
+        let userBalance = 50;
         let gameCoins = parseInt(localStorage.getItem('tonBlastGameCoins') || '0');
 
         const gameArea = document.getElementById('game-area');
@@ -456,7 +455,7 @@
         const afterConnect = document.getElementById('after-connect');
         const ownerProfitElement = document.getElementById('owner-profit');
 
-        // Трекер твоих доходов
+        // Трекер доходов
         const profitTracker = {
             totalCommission: 0,
             totalWithdrawals: 0,
@@ -469,8 +468,6 @@
             },
             
             displayProfit: function() {
-                console.log(`💰 Ваша прибыль: ${this.totalCommission.toFixed(2)} TON (с ${this.totalWithdrawals} выводов)`);
-                
                 if (ownerProfitElement) {
                     ownerProfitElement.style.display = 'inline-block';
                     ownerProfitElement.innerHTML = `👑 Прибыль: ${this.totalCommission.toFixed(2)} TON`;
@@ -492,10 +489,9 @@
             }
         };
 
-        // Инициализация TON Connect с готовой иконкой
+        // Инициализация TON Connect
         function initTonConnect() {
             try {
-                // Inline манифест с готовой иконкой
                 const manifest = {
                     "url": "https://ton-blast-game.vercel.app",
                     "name": "TON Blast Game",
@@ -521,6 +517,10 @@
         // Подключение кошелька
         async function connectWallet() {
             try {
+                if (!tonConnectUI) {
+                    initTonConnect();
+                }
+                
                 const wallet = await tonConnectUI.connectWallet();
                 playerWallet = wallet;
                 updateWalletInfo();
@@ -532,7 +532,9 @@
 
         // Отключение кошелька
         function disconnectWallet() {
-            tonConnectUI.disconnect();
+            if (tonConnectUI) {
+                tonConnectUI.disconnect();
+            }
             playerWallet = null;
             afterConnect.style.display = 'none';
             document.getElementById('wallet-info').innerHTML = `
@@ -554,7 +556,6 @@
                     <p style="font-size: 14px; color: #666; margin: 10px 0;">Адрес: ${shortAddress}</p>
                 `;
                 
-                // Показываем блок с балансом и ставками
                 afterConnect.style.display = 'block';
                 updateBalanceDisplay();
                 
@@ -583,9 +584,8 @@
             }
             
             currentBet = amount;
-            userBalance -= amount; // Списываем ставку
+            userBalance -= amount;
             
-            // Обновляем UI
             afterConnect.style.display = 'none';
             document.getElementById('wallet-info').innerHTML += `
                 <div style="background: #e3f2fd; padding: 15px; border-radius: 10px; margin-top: 15px; text-align: center;">
@@ -650,7 +650,6 @@
                 collectCoin(this);
             };
             
-            // Автоматическое исчезновение через 4 секунды
             setTimeout(() => {
                 if (coin.parentNode) {
                     coin.style.opacity = '0.5';
@@ -695,8 +694,7 @@
             gameArea.style.display = 'none';
             gameResult.style.display = 'block';
             
-            // Расчет выигрыша
-            const winMultiplier = 1 + (score / 1000); // Чем больше собрал, тем выше множитель
+            const winMultiplier = 1 + (score / 1000);
             const winAmount = currentBet * winMultiplier;
             userBalance += winAmount;
             
@@ -715,7 +713,6 @@
                 </p>
             `;
             
-            // Сбрасываем ставку
             currentBet = 0;
         }
 
@@ -726,7 +723,7 @@
             updateWalletInfo();
         }
 
-        // Система вывода с комиссией 10%
+        // Система вывода
         function showWithdrawModal() {
             const availableTON = Math.floor(gameCoins / 1000) * 45;
             if (availableTON === 0) {
@@ -734,8 +731,7 @@
                 return;
             }
             
-            // Расчет с комиссией
-            const commission = availableTON * 0.10; // 10% комиссия тебе
+            const commission = availableTON * 0.10;
             const playerGets = availableTON - commission;
             
             if (confirm(
@@ -750,40 +746,36 @@
             }
         }
 
-        // Реальный вывод через TON Connect
+        // Реальный вывод
         async function processRealWithdrawal(playerAmount, commission) {
             if (!playerWallet) {
                 alert('❌ Кошелек не подключен');
                 return;
             }
             
-            // ТВОЙ КОШЕЛЕК для комиссии
             const YOUR_WALLET = "UQAWQh7zmJcdgsnBzwMwQCVaW_chq_xid7TO2TmSWxnueN_W";
             
             try {
                 const transaction = {
-                    validUntil: Math.floor(Date.now() / 1000) + 600, // 10 минут
+                    validUntil: Math.floor(Date.now() / 1000) + 600,
                     messages: [
                         {
-                            address: YOUR_WALLET, // КОМИССИЯ тебе
-                            amount: (commission * 1000000000).toString() // в нанокенах
+                            address: YOUR_WALLET,
+                            amount: (commission * 1000000000).toString()
                         },
                         {
-                            address: playerWallet.account.address, // Игроку
+                            address: playerWallet.account.address,
                             amount: (playerAmount * 1000000000).toString()
                         }
                     ]
                 };
                 
-                // Отправка транзакции
                 const result = await tonConnectUI.sendTransaction(transaction);
                 
-                // Обновляем баланс игрока
-                gameCoins = gameCoins % 1000; // Оставляем остаток
+                gameCoins = gameCoins % 1000;
                 localStorage.setItem('tonBlastGameCoins', gameCoins.toString());
-                userBalance += playerAmount; // Игрок получает свой выигрыш
+                userBalance += playerAmount;
                 
-                // Добавляем комиссию в твою прибыль
                 profitTracker.addProfit(commission);
                 
                 updateBalanceDisplay();
