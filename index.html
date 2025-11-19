@@ -24,7 +24,7 @@
         }
         
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--ton-black);
             color: white;
             line-height: 1.6;
@@ -75,13 +75,13 @@
         #user-info {
             font-size: 16px;
             opacity: 0.9;
+            margin-bottom: 10px;
         }
 
         #owner-profit {
             background: rgba(255, 255, 255, 0.1);
             padding: 8px 15px;
             border-radius: 20px;
-            margin-top: 10px;
             font-size: 12px;
             display: inline-block;
             border: 1px solid var(--ton-blue);
@@ -114,10 +114,6 @@
         
         .wallet-card {
             border-left: 4px solid var(--ton-blue);
-        }
-        
-        .game-card {
-            border-left: 4px solid var(--ton-green);
         }
         
         .premium-card {
@@ -155,9 +151,9 @@
             margin: 8px 0;
             box-shadow: 0 4px 15px rgba(0, 136, 204, 0.3);
             transition: all 0.3s ease;
-            display: inline-block;
-            text-align: center;
+            display: block;
             width: 100%;
+            text-align: center;
             position: relative;
             overflow: hidden;
         }
@@ -189,6 +185,7 @@
         .ton-button.premium {
             background: linear-gradient(135deg, var(--ton-gold), #ffed4e);
             color: var(--ton-black);
+            font-weight: bold;
         }
         
         .ton-button.small {
@@ -196,14 +193,7 @@
             font-size: 14px;
             width: auto;
             margin: 5px;
-        }
-        
-        .ton-button.danger {
-            background: linear-gradient(135deg, var(--ton-red), #ff3838);
-        }
-        
-        .ton-button.success {
-            background: linear-gradient(135deg, var(--ton-green), #00a085);
+            display: inline-block;
         }
         
         .ton-button:disabled {
@@ -215,6 +205,33 @@
         
         .ton-button:disabled:hover::before {
             left: -100%;
+        }
+        
+        /* Status Messages */
+        .status-message {
+            padding: 12px;
+            border-radius: 10px;
+            margin: 10px 0;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .status-success {
+            background: rgba(0, 200, 83, 0.1);
+            border: 1px solid var(--ton-green);
+            color: var(--ton-green);
+        }
+        
+        .status-error {
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid var(--ton-red);
+            color: var(--ton-red);
+        }
+        
+        .status-info {
+            background: rgba(0, 136, 204, 0.1);
+            border: 1px solid var(--ton-blue);
+            color: var(--ton-blue);
         }
         
         /* Game Area */
@@ -271,14 +288,6 @@
             transform: scale(1.15);
         }
         
-        .ton-coin.premium:hover {
-            transform: scale(1.2);
-            box-shadow: 
-                0 0 40px rgba(255, 215, 0, 1),
-                inset 0 0 35px rgba(255, 255, 255, 0.5),
-                0 0 0 4px rgba(255, 255, 255, 0.8);
-        }
-        
         @keyframes float {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
             50% { transform: translateY(-10px) rotate(5deg); }
@@ -313,7 +322,6 @@
         #game-result {
             display: none;
             text-align: center;
-            padding: 20px;
         }
         
         .result-card {
@@ -389,10 +397,26 @@
             cursor: pointer;
             font-size: 12px;
             transition: all 0.3s ease;
+            z-index: 1000;
         }
         
         .back-button:hover {
             background: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Loading */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
         
         /* Responsive */
@@ -432,8 +456,8 @@
             <button class="back-button" onclick="backToMain()" style="display: none;">← Back</button>
             <h1>💎 TON BLAST</h1>
             <div class="ton-subtitle">Crypto Arcade Game</div>
-            <div id="user-info">Loading...</div>
-            <div id="owner-profit" style="display: none;"></div>
+            <div id="user-info">Loading user...</div>
+            <div id="owner-profit" style="display: none;">Owner Profit: 0.00 TON</div>
         </div>
         
         <div class="content-section">
@@ -441,15 +465,18 @@
             <div class="ton-card wallet-card" id="wallet-section">
                 <h2>🔗 TON Wallet</h2>
                 <div id="wallet-info">
-                    <p>Connect your TON wallet to start playing</p>
-                    <button class="ton-button" onclick="connectWallet()">
+                    <p>Connect your TON wallet to start playing and earn real cryptocurrency</p>
+                    <button class="ton-button" onclick="connectWallet()" id="connect-wallet-btn">
                         🎯 Connect TON Wallet
                     </button>
                     <!-- Demo Mode Button -->
                     <button class="ton-button secondary" onclick="enableDemoMode()">
-                        🎮 Try Demo Mode (No Wallet)
+                        🎮 Try Demo Mode (No Wallet Needed)
                     </button>
                 </div>
+                
+                <!-- Wallet Connection Status -->
+                <div id="wallet-status"></div>
                 
                 <!-- After Wallet Connect -->
                 <div id="after-connect" style="display: none; margin-top: 15px;">
@@ -493,9 +520,9 @@
                     
                     <div style="display: flex; gap: 10px; margin-top: 15px;">
                         <button class="ton-button success" onclick="showWithdrawModal()" style="flex: 1;">
-                            💸 Withdraw
+                            💸 Withdraw Funds
                         </button>
-                        <button class="ton-button danger" onclick="disconnectWallet()" style="flex: 1;">
+                        <button class="ton-button" onclick="disconnectWallet()" style="flex: 1;">
                             🔌 Disconnect
                         </button>
                     </div>
@@ -536,7 +563,7 @@
                 <h2 id="result-title">🎮 Game Completed!</h2>
                 <div id="result-details" style="margin: 15px 0;"></div>
                 <button class="ton-button" onclick="resetGame()">🔄 Play Again</button>
-                <button class="ton-button secondary" onclick="shareResult()">📤 Share</button>
+                <button class="ton-button secondary" onclick="shareResult()">📤 Share Result</button>
             </div>
         </div>
     </div>
@@ -548,6 +575,7 @@
         // Telegram Web App
         let tg = window.Telegram.WebApp;
         tg.expand();
+        tg.enableClosingConfirmation();
         
         // Game Logic
         let score = 0;
@@ -572,8 +600,10 @@
         const afterConnect = document.getElementById('after-connect');
         const ownerProfitElement = document.getElementById('owner-profit');
         const backButton = document.querySelector('.back-button');
+        const walletStatus = document.getElementById('wallet-status');
+        const connectWalletBtn = document.getElementById('connect-wallet-btn');
 
-        // User Info
+        // Initialize user info
         if (tg.initDataUnsafe.user) {
             let user = tg.initDataUnsafe.user;
             let userName = user.first_name + (user.last_name ? ' ' + user.last_name : '');
@@ -606,7 +636,7 @@
                 premiumStatus.innerHTML = '⭐ <strong>PREMIUM USER</strong>';
                 premiumStatus.style.color = 'var(--ton-gold)';
             } else {
-                premiumStatus.innerHTML = '⭐ Regular User - <a href="#" onclick="buyPremium()" style="color: var(--ton-gold);">Upgrade to Premium</a>';
+                premiumStatus.innerHTML = '⭐ Regular User - <a href="#" onclick="buyPremium()" style="color: var(--ton-gold); text-decoration: none;">Upgrade to Premium</a>';
             }
             
             return gamesLeft > 0;
@@ -652,7 +682,7 @@
             }
         };
 
-        // TON Connect Initialization
+        // TON Connect Initialization - FIXED VERSION
         function initTonConnect() {
             try {
                 const manifest = {
@@ -661,21 +691,46 @@
                     "iconUrl": "https://raw.githubusercontent.com/ton-community/tutorials/main/03-client/test-dapp/icon.png"
                 };
                 
+                // Check if TON_CONNECT_UI is available
+                if (typeof TON_CONNECT_UI === 'undefined') {
+                    showWalletStatus('TON Connect UI not loaded. Please refresh the page.', 'error');
+                    return;
+                }
+                
                 tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
                     manifest: manifest,
                     buttonRootId: 'ton-connect-button'
                 });
                 
-                tonConnectUI.connectionRestored.then((value) => {
-                    if (value) {
-                        playerWallet = value;
+                // Listen for connection changes
+                tonConnectUI.onStatusChange(wallet => {
+                    if (wallet) {
+                        playerWallet = wallet;
                         updateWalletInfo();
+                        showWalletStatus('✅ Wallet connected successfully!', 'success');
+                    } else {
+                        playerWallet = null;
+                        showWalletStatus('🔌 Wallet disconnected', 'info');
                     }
+                });
+                
+                // Restore existing connection
+                tonConnectUI.connectionRestored.then(() => {
+                    console.log('Connection restore attempted');
                 });
                 
             } catch (error) {
                 console.error('TON Connect init error:', error);
+                showWalletStatus('❌ Wallet connection failed. Please try again.', 'error');
             }
+        }
+
+        // Show wallet status messages
+        function showWalletStatus(message, type) {
+            walletStatus.innerHTML = `<div class="status-message status-${type}">${message}</div>`;
+            setTimeout(() => {
+                walletStatus.innerHTML = '';
+            }, 5000);
         }
 
         // Demo Mode
@@ -687,17 +742,19 @@
                 } 
             };
             userBalance = 100;
+            isPremium = true; // Demo gets premium features
             updateWalletInfo();
             
             document.getElementById('wallet-info').innerHTML = `
                 <h3>🎮 DEMO MODE ACTIVATED</h3>
-                <p style="color: #ccc; font-size: 14px;">Test the game without wallet connection</p>
+                <p style="color: #ccc; font-size: 14px;">Test all premium features without real TON</p>
+                <div class="status-message status-success">
+                    ⭐ Premium features enabled for testing
+                </div>
                 <button class="ton-button" onclick="connectWallet()" style="margin-top: 10px;">
                     🔗 Connect Real Wallet
                 </button>
             `;
-            
-            alert("✅ Demo mode activated! You can test all game features");
         }
 
         // Back to Main
@@ -709,19 +766,24 @@
             backButton.style.display = 'none';
         }
 
-        // Wallet Functions
+        // Wallet Functions - IMPROVED
         async function connectWallet() {
             try {
                 if (!tonConnectUI) {
                     initTonConnect();
                 }
                 
-                const wallet = await tonConnectUI.connectWallet();
-                playerWallet = wallet;
-                updateWalletInfo();
+                showWalletStatus('🔄 Connecting wallet...', 'info');
+                connectWalletBtn.innerHTML = '<span class="loading"></span> Connecting...';
+                connectWalletBtn.disabled = true;
+                
+                await tonConnectUI.connectWallet();
+                
             } catch (error) {
                 console.error('Connection error:', error);
-                alert('❌ Wallet connection failed');
+                showWalletStatus('❌ Connection failed. Please try again.', 'error');
+                connectWalletBtn.innerHTML = '🎯 Connect TON Wallet';
+                connectWalletBtn.disabled = false;
             }
         }
 
@@ -732,14 +794,15 @@
             playerWallet = null;
             afterConnect.style.display = 'none';
             document.getElementById('wallet-info').innerHTML = `
-                <p>Connect your TON wallet to start playing</p>
-                <button class="ton-button" onclick="connectWallet()">
+                <p>Connect your TON wallet to start playing and earn real cryptocurrency</p>
+                <button class="ton-button" onclick="connectWallet()" id="connect-wallet-btn">
                     🎯 Connect TON Wallet
                 </button>
                 <button class="ton-button secondary" onclick="enableDemoMode()">
-                    🎮 Try Demo Mode (No Wallet)
+                    🎮 Try Demo Mode (No Wallet Needed)
                 </button>
             `;
+            showWalletStatus('🔌 Wallet disconnected', 'info');
         }
 
         function updateWalletInfo() {
@@ -756,13 +819,16 @@
                 
                 gameStats.style.display = 'block';
                 profitTracker.loadFromLocalStorage();
+                
+                connectWalletBtn.innerHTML = '🎯 Connect TON Wallet';
+                connectWalletBtn.disabled = false;
             }
         }
 
         function updateBalanceDisplay() {
             document.getElementById('game-coins-balance').textContent = gameCoins;
             document.getElementById('ton-balance').textContent = userBalance.toFixed(2);
-            document.getElementById('withdraw-amount').textContent = Math.floor(gameCoins / 1000) * 4.05;
+            document.getElementById('withdraw-amount').textContent = (Math.floor(gameCoins / 1000) * 4.05).toFixed(2);
         }
 
         // Betting System
@@ -876,7 +942,7 @@
 
         function updateGameUI() {
             document.getElementById('coins-count').textContent = score;
-            document.getElementById('withdraw-amount').textContent = Math.floor(gameCoins / 1000) * 4.05;
+            document.getElementById('withdraw-amount').textContent = (Math.floor(gameCoins / 1000) * 4.05).toFixed(2);
         }
 
         function endGame() {
@@ -946,8 +1012,8 @@
                 `💸 WITHDRAWAL REQUEST\n\n` +
                 `💰 Your coins: ${gameCoins}\n` +
                 `📊 Rate: 1000 coins = 4.5 TON\n` +
-                `🎯 You receive: ${playerGets} TON\n` +
-                `⚡ Platform fee: ${commission} TON (10%)\n\n` +
+                `🎯 You receive: ${playerGets.toFixed(2)} TON\n` +
+                `⚡ Platform fee: ${commission.toFixed(2)} TON (10%)\n\n` +
                 `Confirm withdrawal?`
             )) {
                 processRealWithdrawal(playerGets, commission);
@@ -988,8 +1054,8 @@
                 updateBalanceDisplay();
                 
                 alert(`✅ Withdrawal successful!\n\n` +
-                      `📤 You received: ${playerAmount} TON\n` +
-                      `💰 Platform fee: ${commission} TON\n` +
+                      `📤 You received: ${playerAmount.toFixed(2)} TON\n` +
+                      `💰 Platform fee: ${commission.toFixed(2)} TON\n` +
                       `💎 Remaining coins: ${gameCoins}`);
                       
             } catch (error) {
