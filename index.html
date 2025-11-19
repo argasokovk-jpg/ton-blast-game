@@ -337,6 +337,10 @@
                     <button class="tg-button" onclick="connectWallet()">
                         🎯 Connect TON Wallet
                     </button>
+                    <!-- Кнопка демо-режима -->
+                    <button class="tg-button secondary" onclick="enableDemoMode()" style="margin-top: 10px; width: 100%;">
+                        🎮 Тестовый режим (без кошелька)
+                    </button>
                 </div>
                 
                 <!-- Блок после подключения кошелька -->
@@ -354,9 +358,9 @@
                     <div class="commission-info">
                         <h4>⚡ Система выплат</h4>
                         <p style="font-size: 14px; margin: 5px 0;">
-                            💰 1000 монет = 45 TON<br>
+                            💰 1000 монет = 4.5 TON<br>
                             🎯 Комиссия: 10%<br>
-                            📊 Вы получите: 40.5 TON
+                            📊 Вы получите: 4.05 TON
                         </p>
                     </div>
                     
@@ -492,8 +496,49 @@
         // Инициализация TON Connect
         function initTonConnect() {
             try {
+                console.log('Initializing TON Connect...');
+                
+                // Правильная инициализация с manifest
                 const manifest = {
                     "url": "https://ton-blast-game.vercel.app",
+                    "name": "TON Blast Game",
+                    "iconUrl": "https://raw.githubusercontent.com/ton-community/tutorials/main/03-client/test-dapp/icon.png"
+                };
+                
+                // Убедитесь что TON_CONNECT_UI доступен
+                if (typeof TON_CONNECT_UI === 'undefined') {
+                    console.error('TON Connect UI not loaded');
+                    return;
+                }
+                
+                tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+                    manifest: manifest
+                });
+                
+                console.log('TON Connect initialized successfully');
+                
+                tonConnectUI.connectionRestored.then((value) => {
+                    console.log('Connection restored:', value);
+                    if (value) {
+                        playerWallet = value;
+                        updateWalletInfo();
+                    }
+                }).catch(error => {
+                    console.error('Connection restore error:', error);
+                });
+                
+            } catch (error) {
+                console.error('TON Connect init error:', error);
+                // Альтернативная инициализация
+                initFallback();
+            }
+        }
+
+        // Фолбэк на случай ошибки
+        function initFallback() {
+            try {
+                const manifest = {
+                    "url": window.location.origin,
                     "name": "TON Blast Game",
                     "iconUrl": "https://raw.githubusercontent.com/ton-community/tutorials/main/03-client/test-dapp/icon.png"
                 };
@@ -501,17 +546,35 @@
                 tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
                     manifest: manifest
                 });
-                
-                tonConnectUI.connectionRestored.then((value) => {
-                    if (value) {
-                        playerWallet = value;
-                        updateWalletInfo();
-                    }
-                });
-                
-            } catch (error) {
-                console.error('TON Connect init error:', error);
+            } catch (fallbackError) {
+                console.error('Fallback init failed:', fallbackError);
             }
+        }
+
+        // Демо-режим для тестирования
+        function enableDemoMode() {
+            console.log('Enabling demo mode...');
+            playerWallet = { 
+                account: { 
+                    address: "UQDEMO1234567890DEMO1234567890DEMO1234567890DEMO",
+                    chain: "-239"
+                } 
+            };
+            userBalance = 100; // Начальный баланс для демо
+            updateWalletInfo();
+            
+            // Показываем сообщение
+            if (document.getElementById('wallet-info')) {
+                document.getElementById('wallet-info').innerHTML = `
+                    <h3>🎮 Демо-режим активирован</h3>
+                    <p style="color: #666; font-size: 14px;">Тестируйте игру без подключения кошелька</p>
+                    <button class="tg-button" onclick="connectWallet()" style="margin-top: 10px;">
+                        🔗 Подключить реальный кошелек
+                    </button>
+                `;
+            }
+            
+            alert("✅ Демо-режим активирован! Можно тестировать всю функциональность игры");
         }
 
         // Подключение кошелька
@@ -541,6 +604,9 @@
                 <p>Для игры требуется подключение TON кошелька</p>
                 <button class="tg-button" onclick="connectWallet()">
                     🎯 Connect TON Wallet
+                </button>
+                <button class="tg-button secondary" onclick="enableDemoMode()" style="margin-top: 10px; width: 100%;">
+                    🎮 Тестовый режим (без кошелька)
                 </button>
             `;
             walletSection.classList.add('wallet-card');
@@ -573,7 +639,7 @@
         function updateBalanceDisplay() {
             document.getElementById('game-coins-balance').textContent = gameCoins;
             document.getElementById('ton-balance').textContent = userBalance.toFixed(2);
-            document.getElementById('withdraw-amount').textContent = Math.floor(gameCoins / 1000) * 40.5;
+            document.getElementById('withdraw-amount').textContent = Math.floor(gameCoins / 1000) * 4.05;
         }
 
         // Размещение ставки
@@ -671,8 +737,8 @@
             setTimeout(() => {
                 if (coinElement.parentNode) {
                     gameArea.removeChild(coinElement);
-                    score += 100;
-                    gameCoins += 100;
+                    score += 10;          // 10 очков за шарик вместо 100
+                    gameCoins += 10;      // 10 монет за шарик вместо 100
                     localStorage.setItem('tonBlastGameCoins', gameCoins.toString());
                     updateGameUI();
                     updateBalanceDisplay();
@@ -683,7 +749,7 @@
         // Обновление игрового UI
         function updateGameUI() {
             document.getElementById('coins-count').textContent = score;
-            document.getElementById('withdraw-amount').textContent = Math.floor(gameCoins / 1000) * 40.5;
+            document.getElementById('withdraw-amount').textContent = Math.floor(gameCoins / 1000) * 4.05;
         }
 
         // Завершение игры
@@ -694,7 +760,8 @@
             gameArea.style.display = 'none';
             gameResult.style.display = 'block';
             
-            const winMultiplier = 1 + (score / 1000);
+            // Новая формула с базовой комиссией 10%
+            const winMultiplier = 0.9 + (score / 5000); // БЫЛО: 1 + (score/1000)
             const winAmount = currentBet * winMultiplier;
             userBalance += winAmount;
             
@@ -725,7 +792,7 @@
 
         // Система вывода
         function showWithdrawModal() {
-            const availableTON = Math.floor(gameCoins / 1000) * 45;
+            const availableTON = Math.floor(gameCoins / 1000) * 4.5; // БЫЛО: 45
             if (availableTON === 0) {
                 alert('Минимум 1000 монет для вывода!\nСоберите ещё ' + (1000 - gameCoins) + ' монет');
                 return;
@@ -737,7 +804,7 @@
             if (confirm(
                 `💸 ЗАПРОС НА ВЫВОД\n\n` +
                 `💰 Ваши монеты: ${gameCoins}\n` +
-                `📊 Курс: 1000 монет = 45 TON\n` +
+                `📊 Курс: 1000 монет = 4.5 TON\n` +
                 `🎯 К получению: ${playerGets} TON\n` +
                 `⚡ Комиссия платформы: ${commission} TON (10%)\n\n` +
                 `Подтвердить вывод?`
@@ -823,7 +890,7 @@
 
         // Поделиться результатом
         function shareResult() {
-            const shareText = `🎮 Я собрал ${score} монет в TON Blast Game и выиграл ${(currentBet * (1 + score/1000)).toFixed(2)} TON! Сможешь побить мой рекорд? 🏆\n\nПрисоединяйся: https://t.me/TONBlastGame_bot`;
+            const shareText = `🎮 Я собрал ${score} монет в TON Blast Game и выиграл ${(currentBet * (0.9 + score/5000)).toFixed(2)} TON! Сможешь побить мой рекорд? 🏆\n\nПрисоединяйся: https://t.me/TONBlastGame_bot`;
             
             if (navigator.share) {
                 navigator.share({ text: shareText });
