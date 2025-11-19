@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TON Blast Game</title>
+    <title>TON Blast - Crypto Arcade</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -12,33 +12,64 @@
             box-sizing: border-box;
         }
         
+        :root {
+            --ton-black: #1a1a1a;
+            --ton-dark: #2d2d2d;
+            --ton-blue: #0088cc;
+            --ton-light-blue: #00a8ff;
+            --ton-gold: #ffd700;
+            --ton-green: #00c781;
+            --ton-red: #ff4757;
+            --ton-purple: #7e57c2;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
-            background: #f0f2f5;
-            color: #333;
+            font-family: 'Arial', sans-serif;
+            background: var(--ton-black);
+            color: white;
+            line-height: 1.6;
         }
         
         .container {
             max-width: 600px;
             margin: 0 auto;
-            background: white;
+            background: var(--ton-dark);
             min-height: 100vh;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            position: relative;
         }
         
-        .tg-header {
-            background: linear-gradient(45deg, #0088cc, #00cc88);
+        /* TON Header */
+        .ton-header {
+            background: linear-gradient(135deg, var(--ton-black), var(--ton-blue));
             color: white;
             padding: 25px 20px;
             text-align: center;
-            border-radius: 0 0 20px 20px;
-            box-shadow: 0 4px 15px rgba(0,136,204,0.3);
+            border-bottom: 3px solid var(--ton-blue);
+            position: relative;
+            overflow: hidden;
         }
         
-        .tg-header h1 {
+        .ton-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--ton-gold), transparent);
+        }
+        
+        .ton-header h1 {
             font-size: 28px;
+            margin-bottom: 8px;
+            font-weight: bold;
+            text-shadow: 0 2px 10px rgba(0, 136, 204, 0.5);
+        }
+        
+        .ton-subtitle {
+            font-size: 14px;
+            opacity: 0.8;
             margin-bottom: 10px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
         
         #user-info {
@@ -47,104 +78,151 @@
         }
 
         #owner-profit {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.1);
             padding: 8px 15px;
             border-radius: 20px;
             margin-top: 10px;
-            font-size: 14px;
+            font-size: 12px;
             display: inline-block;
+            border: 1px solid var(--ton-blue);
         }
         
         .content-section {
             padding: 20px;
         }
         
-        .card {
-            background: white;
+        /* TON Cards */
+        .ton-card {
+            background: linear-gradient(135deg, var(--ton-dark), #363636);
             padding: 20px;
             border-radius: 15px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            border: 1px solid #e0e0e0;
+            border: 1px solid #404040;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        
+        .ton-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--ton-blue), transparent);
         }
         
         .wallet-card {
-            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
-            border-left: 4px solid #fdcb6e;
+            border-left: 4px solid var(--ton-blue);
         }
         
         .game-card {
-            background: linear-gradient(135deg, #d0f0fd, #a8e6cf);
-            border-left: 4px solid #0088cc;
+            border-left: 4px solid var(--ton-green);
+        }
+        
+        .premium-card {
+            border-left: 4px solid var(--ton-gold);
+            background: linear-gradient(135deg, #2d2d2d, #3a3a3a);
         }
         
         .stats-card {
-            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-            border-left: 4px solid #2196f3;
-        }
-        
-        .referral-card {
-            background: linear-gradient(135deg, #f0f4ff, #d0d8ff);
-            border-left: 4px solid #7e57c2;
+            border-left: 4px solid var(--ton-purple);
         }
         
         h2 {
-            color: #2d3436;
+            color: white;
             margin-bottom: 15px;
             font-size: 20px;
+            font-weight: bold;
         }
         
         h3 {
-            color: #0088cc;
+            color: var(--ton-light-blue);
             margin-bottom: 10px;
             font-size: 18px;
         }
         
-        /* Кнопки в стиле Telegram */
-        .tg-button {
-            background: linear-gradient(45deg, #0088cc, #00a8ff);
+        /* TON Buttons */
+        .ton-button {
+            background: linear-gradient(135deg, var(--ton-blue), var(--ton-light-blue));
             color: white;
             border: none;
             padding: 15px 25px;
-            border-radius: 25px;
+            border-radius: 12px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            margin: 10px 5px;
-            box-shadow: 0 4px 15px rgba(0,136,204,0.3);
+            margin: 8px 0;
+            box-shadow: 0 4px 15px rgba(0, 136, 204, 0.3);
             transition: all 0.3s ease;
             display: inline-block;
             text-align: center;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
         }
         
-        .tg-button:hover {
+        .ton-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .ton-button:hover::before {
+            left: 100%;
+        }
+        
+        .ton-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,136,204,0.4);
+            box-shadow: 0 6px 20px rgba(0, 136, 204, 0.5);
         }
         
-        .tg-button.secondary {
-            background: linear-gradient(45deg, #00cc88, #00e5a0);
+        .ton-button.secondary {
+            background: linear-gradient(135deg, var(--ton-green), #00e5a0);
         }
         
-        .tg-button.small {
-            padding: 10px 20px;
+        .ton-button.premium {
+            background: linear-gradient(135deg, var(--ton-gold), #ffed4e);
+            color: var(--ton-black);
+        }
+        
+        .ton-button.small {
+            padding: 12px 20px;
             font-size: 14px;
+            width: auto;
+            margin: 5px;
         }
         
-        .tg-button.danger {
-            background: linear-gradient(45deg, #ff4757, #ff3838);
-        }
-
-        .tg-button.success {
-            background: linear-gradient(45deg, #00b894, #00a085);
+        .ton-button.danger {
+            background: linear-gradient(135deg, var(--ton-red), #ff3838);
         }
         
-        /* Игровая область */
+        .ton-button.success {
+            background: linear-gradient(135deg, var(--ton-green), #00a085);
+        }
+        
+        .ton-button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .ton-button:disabled:hover::before {
+            left: -100%;
+        }
+        
+        /* Game Area */
         #game-area {
             position: relative;
             width: 100%;
             height: 400px;
-            border: 3px solid #0088cc;
+            border: 2px solid var(--ton-blue);
             border-radius: 15px;
             background: linear-gradient(135deg, #1a1a2e, #16213e);
             margin: 20px 0;
@@ -152,11 +230,11 @@
             display: none;
         }
         
-        /* TON шарики */
+        /* TON Coins */
         .ton-coin {
             width: 70px;
             height: 70px;
-            background: radial-gradient(circle at 30% 30%, #0088cc, #0066aa, #004477);
+            background: radial-gradient(circle at 30% 30%, var(--ton-blue), #0066aa, #004477);
             position: absolute;
             border-radius: 50%;
             cursor: pointer;
@@ -175,6 +253,14 @@
             transition: all 0.3s ease;
         }
         
+        .ton-coin.premium {
+            background: radial-gradient(circle at 30% 30%, var(--ton-gold), #ffaa00, #cc8800);
+            box-shadow: 
+                0 0 30px rgba(255, 215, 0, 0.8),
+                inset 0 0 30px rgba(255, 255, 255, 0.4),
+                0 0 0 3px rgba(255, 255, 255, 0.7);
+        }
+        
         .ton-coin::before {
             content: "💎";
             font-size: 24px;
@@ -183,10 +269,14 @@
         
         .ton-coin:hover {
             transform: scale(1.15);
+        }
+        
+        .ton-coin.premium:hover {
+            transform: scale(1.2);
             box-shadow: 
-                0 0 35px rgba(0, 136, 204, 1),
-                inset 0 0 30px rgba(255, 255, 255, 0.4),
-                0 0 0 4px rgba(255, 255, 255, 0.7);
+                0 0 40px rgba(255, 215, 0, 1),
+                inset 0 0 35px rgba(255, 255, 255, 0.5),
+                0 0 0 4px rgba(255, 255, 255, 0.8);
         }
         
         @keyframes float {
@@ -194,7 +284,7 @@
             50% { transform: translateY(-10px) rotate(5deg); }
         }
         
-        /* Таймер и счет */
+        /* Game Info */
         .game-info {
             display: flex;
             justify-content: space-between;
@@ -204,20 +294,22 @@
         }
         
         .timer {
-            color: #e74c3c;
+            color: var(--ton-red);
             background: rgba(231, 76, 60, 0.1);
             padding: 10px 15px;
             border-radius: 10px;
+            border: 1px solid var(--ton-red);
         }
         
         .score {
-            color: #27ae60;
+            color: var(--ton-green);
             background: rgba(39, 174, 96, 0.1);
             padding: 10px 15px;
             border-radius: 10px;
+            border: 1px solid var(--ton-green);
         }
         
-        /* Результаты игры */
+        /* Game Results */
         #game-result {
             display: none;
             text-align: center;
@@ -225,35 +317,57 @@
         }
         
         .result-card {
-            background: linear-gradient(135deg, #e0ffe0, #c8f7c5);
-            border-left: 4px solid #27ae60;
-            margin: 20px 0;
+            background: linear-gradient(135deg, #1e3a1e, #2d4a2d);
+            border-left: 4px solid var(--ton-green);
         }
         
-        /* Лидерборд */
-        .leaderboard-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            margin: 8px 0;
-            background: rgba(0, 136, 204, 0.05);
+        /* Limits & Premium */
+        .limits-info {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid var(--ton-gold);
+            padding: 15px;
             border-radius: 10px;
-            border-left: 3px solid #0088cc;
+            margin: 15px 0;
+            text-align: center;
         }
         
-        .leaderboard-rank {
+        .premium-features {
+            background: rgba(255, 215, 0, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        
+        .premium-badge {
+            background: var(--ton-gold);
+            color: var(--ton-black);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
             font-weight: bold;
-            color: #0088cc;
-            min-width: 30px;
+            margin-left: 10px;
         }
         
-        .leaderboard-score {
-            font-weight: bold;
-            color: #27ae60;
+        /* Balance Info */
+        .balance-info {
+            background: rgba(0, 136, 204, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            text-align: center;
+            border: 1px solid var(--ton-blue);
         }
         
-        /* Блок ставок */
+        .commission-info {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid var(--ton-gold);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        /* Bet Buttons */
         .bet-buttons {
             display: flex;
             gap: 10px;
@@ -262,34 +376,36 @@
             justify-content: center;
         }
         
-        .balance-info {
-            background: rgba(0,136,204,0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin: 10px 0;
-            text-align: center;
-        }
-
-        .commission-info {
-            background: linear-gradient(135deg, #fff9e6, #ffeaa7);
-            border: 2px solid #fdcb6e;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 15px 0;
-            text-align: center;
+        /* Back Button */
+        .back-button {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--ton-blue);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
         }
         
-        /* Адаптивность */
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Responsive */
         @media (max-width: 480px) {
             .content-section {
                 padding: 15px;
             }
             
-            .tg-header {
+            .ton-header {
                 padding: 20px 15px;
             }
             
-            .tg-header h1 {
+            .ton-header h1 {
                 font-size: 24px;
             }
             
@@ -302,17 +418,7 @@
                 height: 60px;
             }
             
-            .tg-button {
-                padding: 12px 20px;
-                font-size: 14px;
-                display: block;
-                width: 100%;
-                margin: 8px 0;
-            }
-            
-            .bet-buttons .tg-button {
-                display: inline-block;
-                width: auto;
+            .bet-buttons .ton-button.small {
                 flex: 1;
                 min-width: 70px;
             }
@@ -321,104 +427,116 @@
 </head>
 <body>
     <div class="container">
-        <!-- Заголовок Telegram -->
-        <div class="tg-header">
-            <h1>🎮 TON Blast Game</h1>
-            <div id="user-info">Загрузка...</div>
+        <!-- TON Header -->
+        <div class="ton-header">
+            <button class="back-button" onclick="backToMain()" style="display: none;">← Back</button>
+            <h1>💎 TON BLAST</h1>
+            <div class="ton-subtitle">Crypto Arcade Game</div>
+            <div id="user-info">Loading...</div>
             <div id="owner-profit" style="display: none;"></div>
         </div>
         
         <div class="content-section">
-            <!-- Карточка кошелька -->
-            <div class="card wallet-card" id="wallet-section">
-                <h2>🔗 TON Кошелек</h2>
+            <!-- Wallet Card -->
+            <div class="ton-card wallet-card" id="wallet-section">
+                <h2>🔗 TON Wallet</h2>
                 <div id="wallet-info">
-                    <p>Для игры требуется подключение TON кошелька</p>
-                    <button class="tg-button" onclick="connectWallet()">
+                    <p>Connect your TON wallet to start playing</p>
+                    <button class="ton-button" onclick="connectWallet()">
                         🎯 Connect TON Wallet
                     </button>
-                    <!-- Кнопка демо-режима -->
-                    <button class="tg-button secondary" onclick="enableDemoMode()" style="margin-top: 10px; width: 100%;">
-                        🎮 Тестовый режим (без кошелька)
+                    <!-- Demo Mode Button -->
+                    <button class="ton-button secondary" onclick="enableDemoMode()">
+                        🎮 Try Demo Mode (No Wallet)
                     </button>
                 </div>
                 
-                <!-- Блок после подключения кошелька -->
+                <!-- After Wallet Connect -->
                 <div id="after-connect" style="display: none; margin-top: 15px;">
-                    <h3>💰 Ваш баланс</h3>
+                    <h3>💰 Your Balance</h3>
                     <div class="balance-info">
-                        <div style="font-size: 18px; font-weight: bold; color: #0088cc;">
-                            💎 <span id="game-coins-balance">0</span> монет
+                        <div style="font-size: 18px; font-weight: bold; color: var(--ton-blue);">
+                            💎 <span id="game-coins-balance">0</span> coins
                         </div>
-                        <div style="font-size: 16px; color: #666; margin-top: 5px;">
+                        <div style="font-size: 16px; color: #ccc; margin-top: 5px;">
                             💵 <span id="ton-balance">0</span> TON
                         </div>
                     </div>
 
-                    <div class="commission-info">
-                        <h4>⚡ Система выплат</h4>
+                    <!-- Game Limits -->
+                    <div class="limits-info" id="limits-section">
+                        <h4>🎯 Daily Game Limits</h4>
                         <p style="font-size: 14px; margin: 5px 0;">
-                            💰 1000 монет = 4.5 TON<br>
-                            🎯 Комиссия: 10%<br>
-                            📊 Вы получите: 4.05 TON
+                            <span id="games-played">0</span>/<span id="games-limit">5</span> games today
+                        </p>
+                        <div id="premium-status" style="font-size: 12px; color: #ccc;">
+                            ⭐ Regular User
+                        </div>
+                    </div>
+
+                    <div class="commission-info">
+                        <h4>⚡ Payout System</h4>
+                        <p style="font-size: 14px; margin: 5px 0;">
+                            💰 1000 coins = 4.5 TON<br>
+                            🎯 Commission: 10%<br>
+                            📊 You get: 4.05 TON
                         </p>
                     </div>
                     
-                    <h3>🎯 Выберите ставку</h3>
+                    <h3>🎯 Place Your Bet</h3>
                     <div class="bet-buttons">
-                        <button class="tg-button small" onclick="placeBet(1)">1 TON</button>
-                        <button class="tg-button small" onclick="placeBet(2)">2 TON</button>
-                        <button class="tg-button small" onclick="placeBet(5)">5 TON</button>
-                        <button class="tg-button small" onclick="placeBet(10)">10 TON</button>
+                        <button class="ton-button small" onclick="placeBet(1)">1 TON</button>
+                        <button class="ton-button small" onclick="placeBet(2)">2 TON</button>
+                        <button class="ton-button small" onclick="placeBet(5)">5 TON</button>
+                        <button class="ton-button small" onclick="placeBet(10)">10 TON</button>
                     </div>
                     
                     <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button class="tg-button success" onclick="showWithdrawModal()" style="flex: 1;">
-                            💸 Вывести
+                        <button class="ton-button success" onclick="showWithdrawModal()" style="flex: 1;">
+                            💸 Withdraw
                         </button>
-                        <button class="tg-button danger" onclick="disconnectWallet()" style="flex: 1;">
-                            🔌 Отключить
+                        <button class="ton-button danger" onclick="disconnectWallet()" style="flex: 1;">
+                            🔌 Disconnect
                         </button>
                     </div>
                 </div>
             </div>
             
-            <!-- Игровая статистика -->
-            <div class="card stats-card" id="game-stats" style="display: none;">
+            <!-- Premium Card -->
+            <div class="ton-card premium-card">
+                <h3>⭐ PREMIUM ACCESS <span class="premium-badge">GOLD</span></h3>
+                <div class="premium-features">
+                    <p>🚀 <strong>20 games/day</strong> (instead of 5)</p>
+                    <p>💎 <strong>2x coins per gem</strong> (20 coins)</p>
+                    <p>🎯 <strong>Higher win multipliers</strong></p>
+                    <p>⚡ <strong>Priority support</strong></p>
+                </div>
+                <button class="ton-button premium" onclick="buyPremium()">
+                    💰 Upgrade for 10 TON
+                </button>
+            </div>
+            
+            <!-- Game Stats -->
+            <div class="ton-card stats-card" id="game-stats" style="display: none;">
                 <div class="game-info">
-                    <div class="timer">⏱️ <span id="time-left">30</span>с</div>
+                    <div class="timer">⏱️ <span id="time-left">30</span>s</div>
                     <div class="score">💎 <span id="coins-count">0</span></div>
                 </div>
-                <div style="text-align: center; color: #666; margin: 10px 0;">
-                    💰 Ставка: <span id="current-bet">0</span> TON | 
-                    Доступно: <span id="withdraw-amount">0</span> TON
+                <div style="text-align: center; color: #ccc; margin: 10px 0;">
+                    💰 Bet: <span id="current-bet">0</span> TON | 
+                    Available: <span id="withdraw-amount">0</span> TON
                 </div>
             </div>
             
-            <!-- Игровая область -->
+            <!-- Game Area -->
             <div id="game-area"></div>
             
-            <!-- Результаты игры -->
-            <div class="card result-card" id="game-result">
-                <h2 id="result-title">🎮 Игра завершена!</h2>
+            <!-- Game Results -->
+            <div class="ton-card result-card" id="game-result">
+                <h2 id="result-title">🎮 Game Completed!</h2>
                 <div id="result-details" style="margin: 15px 0;"></div>
-                <button class="tg-button" onclick="resetGame()">🔄 Играть снова</button>
-                <button class="tg-button secondary" onclick="shareResult()">📤 Поделиться</button>
-            </div>
-            
-            <!-- Лидерборд -->
-            <div class="card">
-                <h3>🏆 Топ игроков</h3>
-                <div id="leaderboard"></div>
-            </div>
-            
-            <!-- Реферальная система -->
-            <div class="card referral-card">
-                <h3>👥 Пригласи друзей</h3>
-                <p>Получай бонусы за приглашенных друзей!</p>
-                <button class="tg-button small" onclick="copyReferralLink()">
-                    📋 Скопировать ссылку
-                </button>
+                <button class="ton-button" onclick="resetGame()">🔄 Play Again</button>
+                <button class="ton-button secondary" onclick="shareResult()">📤 Share</button>
             </div>
         </div>
     </div>
@@ -427,18 +545,11 @@
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     
     <script>
-        // Инициализация Telegram Web App
+        // Telegram Web App
         let tg = window.Telegram.WebApp;
         tg.expand();
         
-        // Показываем информацию о пользователе
-        if (tg.initDataUnsafe.user) {
-            let user = tg.initDataUnsafe.user;
-            let userName = user.first_name + (user.last_name ? ' ' + user.last_name : '');
-            document.getElementById('user-info').innerHTML = `👤 <strong>${userName}</strong>`;
-        }
-
-        // Игровая логика
+        // Game Logic
         let score = 0;
         let gameTimer = 30;
         let timerInterval;
@@ -448,6 +559,9 @@
         let currentBet = 0;
         let userBalance = 50;
         let gameCoins = parseInt(localStorage.getItem('tonBlastGameCoins') || '0');
+        let isPremium = localStorage.getItem('tonBlastPremium') === 'true';
+        let gamesPlayedToday = 0;
+        let lastPlayDate = localStorage.getItem('tonBlastLastPlayDate');
 
         const gameArea = document.getElementById('game-area');
         const walletSection = document.getElementById('wallet-section');
@@ -455,11 +569,56 @@
         const gameResult = document.getElementById('game-result');
         const resultTitle = document.getElementById('result-title');
         const resultDetails = document.getElementById('result-details');
-        const leaderboardElement = document.getElementById('leaderboard');
         const afterConnect = document.getElementById('after-connect');
         const ownerProfitElement = document.getElementById('owner-profit');
+        const backButton = document.querySelector('.back-button');
 
-        // Трекер доходов
+        // User Info
+        if (tg.initDataUnsafe.user) {
+            let user = tg.initDataUnsafe.user;
+            let userName = user.first_name + (user.last_name ? ' ' + user.last_name : '');
+            document.getElementById('user-info').innerHTML = `👤 <strong>${userName}</strong>`;
+        }
+
+        // Game Limits System
+        function updateGameLimits() {
+            const today = new Date().toDateString();
+            
+            // Reset if new day
+            if (lastPlayDate !== today) {
+                gamesPlayedToday = 0;
+                lastPlayDate = today;
+                localStorage.setItem('tonBlastLastPlayDate', today);
+                localStorage.setItem('tonBlastGamesPlayed', '0');
+            } else {
+                gamesPlayedToday = parseInt(localStorage.getItem('tonBlastGamesPlayed') || '0');
+            }
+            
+            const gamesLimit = isPremium ? 20 : 5;
+            const gamesLeft = gamesLimit - gamesPlayedToday;
+            
+            document.getElementById('games-played').textContent = gamesPlayedToday;
+            document.getElementById('games-limit').textContent = gamesLimit;
+            
+            // Update premium status
+            const premiumStatus = document.getElementById('premium-status');
+            if (isPremium) {
+                premiumStatus.innerHTML = '⭐ <strong>PREMIUM USER</strong>';
+                premiumStatus.style.color = 'var(--ton-gold)';
+            } else {
+                premiumStatus.innerHTML = '⭐ Regular User - <a href="#" onclick="buyPremium()" style="color: var(--ton-gold);">Upgrade to Premium</a>';
+            }
+            
+            return gamesLeft > 0;
+        }
+
+        function incrementGamesPlayed() {
+            gamesPlayedToday++;
+            localStorage.setItem('tonBlastGamesPlayed', gamesPlayedToday.toString());
+            updateGameLimits();
+        }
+
+        // Profit Tracker
         const profitTracker = {
             totalCommission: 0,
             totalWithdrawals: 0,
@@ -474,7 +633,7 @@
             displayProfit: function() {
                 if (ownerProfitElement) {
                     ownerProfitElement.style.display = 'inline-block';
-                    ownerProfitElement.innerHTML = `👑 Прибыль: ${this.totalCommission.toFixed(2)} TON`;
+                    ownerProfitElement.innerHTML = `👑 Owner Profit: ${this.totalCommission.toFixed(2)} TON`;
                 }
             },
             
@@ -493,91 +652,64 @@
             }
         };
 
-        // Инициализация TON Connect
+        // TON Connect Initialization
         function initTonConnect() {
             try {
-                console.log('Initializing TON Connect...');
-                
-                // Правильная инициализация с manifest
                 const manifest = {
                     "url": "https://ton-blast-game.vercel.app",
                     "name": "TON Blast Game",
                     "iconUrl": "https://raw.githubusercontent.com/ton-community/tutorials/main/03-client/test-dapp/icon.png"
                 };
                 
-                // Убедитесь что TON_CONNECT_UI доступен
-                if (typeof TON_CONNECT_UI === 'undefined') {
-                    console.error('TON Connect UI not loaded');
-                    return;
-                }
-                
                 tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-                    manifest: manifest
+                    manifest: manifest,
+                    buttonRootId: 'ton-connect-button'
                 });
                 
-                console.log('TON Connect initialized successfully');
-                
                 tonConnectUI.connectionRestored.then((value) => {
-                    console.log('Connection restored:', value);
                     if (value) {
                         playerWallet = value;
                         updateWalletInfo();
                     }
-                }).catch(error => {
-                    console.error('Connection restore error:', error);
                 });
                 
             } catch (error) {
                 console.error('TON Connect init error:', error);
-                // Альтернативная инициализация
-                initFallback();
             }
         }
 
-        // Фолбэк на случай ошибки
-        function initFallback() {
-            try {
-                const manifest = {
-                    "url": window.location.origin,
-                    "name": "TON Blast Game",
-                    "iconUrl": "https://raw.githubusercontent.com/ton-community/tutorials/main/03-client/test-dapp/icon.png"
-                };
-                
-                tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-                    manifest: manifest
-                });
-            } catch (fallbackError) {
-                console.error('Fallback init failed:', fallbackError);
-            }
-        }
-
-        // Демо-режим для тестирования
+        // Demo Mode
         function enableDemoMode() {
-            console.log('Enabling demo mode...');
             playerWallet = { 
                 account: { 
                     address: "UQDEMO1234567890DEMO1234567890DEMO1234567890DEMO",
                     chain: "-239"
                 } 
             };
-            userBalance = 100; // Начальный баланс для демо
+            userBalance = 100;
             updateWalletInfo();
             
-            // Показываем сообщение
-            if (document.getElementById('wallet-info')) {
-                document.getElementById('wallet-info').innerHTML = `
-                    <h3>🎮 Демо-режим активирован</h3>
-                    <p style="color: #666; font-size: 14px;">Тестируйте игру без подключения кошелька</p>
-                    <button class="tg-button" onclick="connectWallet()" style="margin-top: 10px;">
-                        🔗 Подключить реальный кошелек
-                    </button>
-                `;
-            }
+            document.getElementById('wallet-info').innerHTML = `
+                <h3>🎮 DEMO MODE ACTIVATED</h3>
+                <p style="color: #ccc; font-size: 14px;">Test the game without wallet connection</p>
+                <button class="ton-button" onclick="connectWallet()" style="margin-top: 10px;">
+                    🔗 Connect Real Wallet
+                </button>
+            `;
             
-            alert("✅ Демо-режим активирован! Можно тестировать всю функциональность игры");
+            alert("✅ Demo mode activated! You can test all game features");
         }
 
-        // Подключение кошелька
+        // Back to Main
+        function backToMain() {
+            gameArea.style.display = 'none';
+            gameStats.style.display = 'none';
+            gameResult.style.display = 'none';
+            afterConnect.style.display = 'block';
+            backButton.style.display = 'none';
+        }
+
+        // Wallet Functions
         async function connectWallet() {
             try {
                 if (!tonConnectUI) {
@@ -589,11 +721,10 @@
                 updateWalletInfo();
             } catch (error) {
                 console.error('Connection error:', error);
-                alert('❌ Ошибка подключения кошелька');
+                alert('❌ Wallet connection failed');
             }
         }
 
-        // Отключение кошелька
         function disconnectWallet() {
             if (tonConnectUI) {
                 tonConnectUI.disconnect();
@@ -601,51 +732,48 @@
             playerWallet = null;
             afterConnect.style.display = 'none';
             document.getElementById('wallet-info').innerHTML = `
-                <p>Для игры требуется подключение TON кошелька</p>
-                <button class="tg-button" onclick="connectWallet()">
+                <p>Connect your TON wallet to start playing</p>
+                <button class="ton-button" onclick="connectWallet()">
                     🎯 Connect TON Wallet
                 </button>
-                <button class="tg-button secondary" onclick="enableDemoMode()" style="margin-top: 10px; width: 100%;">
-                    🎮 Тестовый режим (без кошелька)
+                <button class="ton-button secondary" onclick="enableDemoMode()">
+                    🎮 Try Demo Mode (No Wallet)
                 </button>
             `;
-            walletSection.classList.add('wallet-card');
-            gameStats.style.display = 'none';
         }
 
-        // Обновление информации о кошельке
         function updateWalletInfo() {
             if (playerWallet) {
                 const shortAddress = playerWallet.account.address.slice(0, 8) + '...' + playerWallet.account.address.slice(-8);
                 document.getElementById('wallet-info').innerHTML = `
-                    <h3>✅ Кошелек подключен</h3>
-                    <p style="font-size: 14px; color: #666; margin: 10px 0;">Адрес: ${shortAddress}</p>
+                    <h3>✅ Wallet Connected</h3>
+                    <p style="font-size: 14px; color: #ccc; margin: 10px 0;">Address: ${shortAddress}</p>
                 `;
                 
                 afterConnect.style.display = 'block';
                 updateBalanceDisplay();
-                
-                walletSection.classList.remove('wallet-card');
-                walletSection.style.background = 'linear-gradient(135deg, #e0ffe0, #c8f7c5)';
-                walletSection.style.borderLeftColor = '#27ae60';
+                updateGameLimits();
                 
                 gameStats.style.display = 'block';
-                loadLeaderboard();
                 profitTracker.loadFromLocalStorage();
             }
         }
 
-        // Обновление отображения баланса
         function updateBalanceDisplay() {
             document.getElementById('game-coins-balance').textContent = gameCoins;
             document.getElementById('ton-balance').textContent = userBalance.toFixed(2);
             document.getElementById('withdraw-amount').textContent = Math.floor(gameCoins / 1000) * 4.05;
         }
 
-        // Размещение ставки
+        // Betting System
         function placeBet(amount) {
+            if (!updateGameLimits()) {
+                alert('❌ Daily game limit reached! Upgrade to Premium for more games.');
+                return;
+            }
+            
             if (userBalance < amount) {
-                alert('❌ Недостаточно TON на балансе!');
+                alert('❌ Insufficient TON balance!');
                 return;
             }
             
@@ -653,12 +781,14 @@
             userBalance -= amount;
             
             afterConnect.style.display = 'none';
+            backButton.style.display = 'block';
+            
             document.getElementById('wallet-info').innerHTML += `
-                <div style="background: #e3f2fd; padding: 15px; border-radius: 10px; margin-top: 15px; text-align: center;">
-                    <h3>💰 Ставка принята!</h3>
-                    <p style="font-size: 18px; font-weight: bold; color: #0088cc;">${amount} TON</p>
-                    <button class="tg-button" onclick="startGame()" style="margin-top: 10px;">
-                        🚀 Начать игру
+                <div style="background: rgba(0, 136, 204, 0.1); padding: 15px; border-radius: 10px; margin-top: 15px; text-align: center; border: 1px solid var(--ton-blue);">
+                    <h3>💰 Bet Placed!</h3>
+                    <p style="font-size: 18px; font-weight: bold; color: var(--ton-blue);">${amount} TON</p>
+                    <button class="ton-button" onclick="startGame()" style="margin-top: 10px;">
+                        🚀 Start Game
                     </button>
                 </div>
             `;
@@ -667,7 +797,7 @@
             document.getElementById('current-bet').textContent = currentBet;
         }
 
-        // Начало игры
+        // Game Functions
         function startGame() {
             score = 0;
             gameTimer = 30;
@@ -679,9 +809,9 @@
             
             startTimer();
             createCoins();
+            incrementGamesPlayed();
         }
 
-        // Таймер игры
         function startTimer() {
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
@@ -695,7 +825,6 @@
             }, 1000);
         }
 
-        // Создание TON шариков
         function createCoins() {
             clearInterval(gameInterval);
             gameInterval = setInterval(() => {
@@ -705,7 +834,7 @@
 
         function createSingleCoin() {
             const coin = document.createElement('div');
-            coin.className = 'ton-coin';
+            coin.className = isPremium ? 'ton-coin premium' : 'ton-coin';
             
             const maxX = gameArea.offsetWidth - 80;
             const maxY = gameArea.offsetHeight - 80;
@@ -719,7 +848,6 @@
             setTimeout(() => {
                 if (coin.parentNode) {
                     coin.style.opacity = '0.5';
-                    coin.style.background = 'radial-gradient(circle, #666666, #444444)';
                     setTimeout(() => {
                         if (coin.parentNode) gameArea.removeChild(coin);
                     }, 500);
@@ -729,7 +857,6 @@
             gameArea.appendChild(coin);
         }
 
-        // Сбор монеты
         function collectCoin(coinElement) {
             coinElement.style.transform = 'scale(1.3)';
             coinElement.style.opacity = '0.7';
@@ -737,8 +864,9 @@
             setTimeout(() => {
                 if (coinElement.parentNode) {
                     gameArea.removeChild(coinElement);
-                    score += 10;          // 10 очков за шарик вместо 100
-                    gameCoins += 10;      // 10 монет за шарик вместо 100
+                    const coinsEarned = isPremium ? 20 : 10; // Premium gets 2x coins
+                    score += coinsEarned;
+                    gameCoins += coinsEarned;
                     localStorage.setItem('tonBlastGameCoins', gameCoins.toString());
                     updateGameUI();
                     updateBalanceDisplay();
@@ -746,13 +874,11 @@
             }, 150);
         }
 
-        // Обновление игрового UI
         function updateGameUI() {
             document.getElementById('coins-count').textContent = score;
             document.getElementById('withdraw-amount').textContent = Math.floor(gameCoins / 1000) * 4.05;
         }
 
-        // Завершение игры
         function endGame() {
             clearInterval(gameInterval);
             clearInterval(timerInterval);
@@ -760,41 +886,56 @@
             gameArea.style.display = 'none';
             gameResult.style.display = 'block';
             
-            // Новая формула с базовой комиссией 10%
-            const winMultiplier = 0.9 + (score / 5000); // БЫЛО: 1 + (score/1000)
+            // Premium gets better multipliers
+            const baseMultiplier = isPremium ? 1.1 : 0.9;
+            const scoreMultiplier = isPremium ? (score / 3000) : (score / 5000);
+            const winMultiplier = baseMultiplier + scoreMultiplier;
             const winAmount = currentBet * winMultiplier;
             userBalance += winAmount;
             
-            saveHighScore(score, currentBet);
             updateBalanceDisplay();
-            loadLeaderboard();
             
-            resultTitle.textContent = '🎮 Игра завершена!';
+            resultTitle.textContent = '🎮 Game Completed!';
             resultDetails.innerHTML = `
-                <p>💎 Собрано монет: <strong>${score}</strong></p>
-                <p>💰 Ваша ставка: <strong>${currentBet} TON</strong></p>
-                <p>🎯 Выигрыш: <strong>${winAmount.toFixed(2)} TON</strong></p>
-                <p>💵 Общий баланс: <strong>${userBalance.toFixed(2)} TON</strong></p>
-                <p style="color: #666; font-size: 14px; margin-top: 10px;">
-                    💡 Соберите 1000+ монет для вывода средств
+                <p>💎 Coins collected: <strong>${score}</strong></p>
+                <p>💰 Your bet: <strong>${currentBet} TON</strong></p>
+                <p>🎯 Winnings: <strong>${winAmount.toFixed(2)} TON</strong></p>
+                <p>💵 Total balance: <strong>${userBalance.toFixed(2)} TON</strong></p>
+                <p style="color: #ccc; font-size: 14px; margin-top: 10px;">
+                    💡 Collect 1000+ coins to withdraw
                 </p>
             `;
             
             currentBet = 0;
         }
 
-        // Сброс игры
         function resetGame() {
-            gameResult.style.display = 'none';
-            afterConnect.style.display = 'block';
+            backToMain();
             updateWalletInfo();
         }
 
-        // Система вывода
+        // Premium System
+        function buyPremium() {
+            if (userBalance < 10) {
+                alert('❌ Need 10 TON to buy Premium');
+                return;
+            }
+            
+            if (confirm(`Upgrade to PREMIUM for 10 TON?\n\n⭐ 20 games/day\n💎 2x coins per gem\n🎯 Better multipliers\n⚡ Priority support`)) {
+                userBalance -= 10;
+                isPremium = true;
+                localStorage.setItem('tonBlastPremium', 'true');
+                updateWalletInfo();
+                updateBalanceDisplay();
+                alert('✅ Premium activated! Enjoy exclusive benefits!');
+            }
+        }
+
+        // Withdrawal System
         function showWithdrawModal() {
-            const availableTON = Math.floor(gameCoins / 1000) * 4.5; // БЫЛО: 45
+            const availableTON = Math.floor(gameCoins / 1000) * 4.5;
             if (availableTON === 0) {
-                alert('Минимум 1000 монет для вывода!\nСоберите ещё ' + (1000 - gameCoins) + ' монет');
+                alert('Minimum 1000 coins to withdraw!\nYou need ' + (1000 - gameCoins) + ' more coins');
                 return;
             }
             
@@ -802,21 +943,20 @@
             const playerGets = availableTON - commission;
             
             if (confirm(
-                `💸 ЗАПРОС НА ВЫВОД\n\n` +
-                `💰 Ваши монеты: ${gameCoins}\n` +
-                `📊 Курс: 1000 монет = 4.5 TON\n` +
-                `🎯 К получению: ${playerGets} TON\n` +
-                `⚡ Комиссия платформы: ${commission} TON (10%)\n\n` +
-                `Подтвердить вывод?`
+                `💸 WITHDRAWAL REQUEST\n\n` +
+                `💰 Your coins: ${gameCoins}\n` +
+                `📊 Rate: 1000 coins = 4.5 TON\n` +
+                `🎯 You receive: ${playerGets} TON\n` +
+                `⚡ Platform fee: ${commission} TON (10%)\n\n` +
+                `Confirm withdrawal?`
             )) {
                 processRealWithdrawal(playerGets, commission);
             }
         }
 
-        // Реальный вывод
         async function processRealWithdrawal(playerAmount, commission) {
             if (!playerWallet) {
-                alert('❌ Кошелек не подключен');
+                alert('❌ Wallet not connected');
                 return;
             }
             
@@ -847,65 +987,35 @@
                 
                 updateBalanceDisplay();
                 
-                alert(`✅ Вывод успешен!\n\n` +
-                      `📤 Игрок получил: ${playerAmount} TON\n` +
-                      `💰 Ваша комиссия: ${commission} TON\n` +
-                      `💎 Осталось монет: ${gameCoins}`);
+                alert(`✅ Withdrawal successful!\n\n` +
+                      `📤 You received: ${playerAmount} TON\n` +
+                      `💰 Platform fee: ${commission} TON\n` +
+                      `💎 Remaining coins: ${gameCoins}`);
                       
             } catch (error) {
                 console.error('Withdrawal error:', error);
-                alert('❌ Ошибка вывода: ' + error.message);
+                alert('❌ Withdrawal failed: ' + error.message);
             }
         }
 
-        // Лидерборд
-        function loadLeaderboard() {
-            const scores = JSON.parse(localStorage.getItem('tonBlastLeaderboard') || '[]');
-            leaderboardElement.innerHTML = scores.slice(0, 5).map((score, index) => `
-                <div class="leaderboard-item">
-                    <div class="leaderboard-rank">${index + 1}</div>
-                    <div>💎 ${score.points} монет</div>
-                    <div class="leaderboard-score">${score.bet} TON</div>
-                </div>
-            `).join('') || '<p style="text-align: center; color: #666;">Пока нет результатов</p>';
-        }
-
-        function saveHighScore(points, bet) {
-            const scores = JSON.parse(localStorage.getItem('tonBlastLeaderboard') || '[]');
-            scores.push({
-                points: points,
-                bet: bet,
-                date: new Date().toLocaleDateString('ru-RU')
-            });
-            scores.sort((a, b) => b.points - a.points);
-            localStorage.setItem('tonBlastLeaderboard', JSON.stringify(scores.slice(0, 10)));
-        }
-
-        // Реферальная система
-        function copyReferralLink() {
-            const link = `https://t.me/${tg.initDataUnsafe.user?.username || 'tonblast'}?start=ref_${tg.initDataUnsafe.user?.id || '123'}`;
-            navigator.clipboard.writeText(link);
-            alert('✅ Реферальная ссылка скопирована!');
-        }
-
-        // Поделиться результатом
+        // Share Results
         function shareResult() {
-            const shareText = `🎮 Я собрал ${score} монет в TON Blast Game и выиграл ${(currentBet * (0.9 + score/5000)).toFixed(2)} TON! Сможешь побить мой рекорд? 🏆\n\nПрисоединяйся: https://t.me/TONBlastGame_bot`;
+            const shareText = `🎮 I collected ${score} coins in TON Blast and won ${(currentBet * (0.9 + score/5000)).toFixed(2)} TON! Can you beat my score? 🏆\n\nJoin now: https://t.me/TONBlastGame_bot`;
             
             if (navigator.share) {
                 navigator.share({ text: shareText });
             } else {
                 navigator.clipboard.writeText(shareText);
-                alert('✅ Результат скопирован!');
+                alert('✅ Result copied to clipboard!');
             }
         }
 
-        // Инициализация при загрузке
+        // Initialize
         window.onload = function() {
             initTonConnect();
-            loadLeaderboard();
             updateBalanceDisplay();
             profitTracker.loadFromLocalStorage();
+            updateGameLimits();
         };
     </script>
 </body>
