@@ -26,7 +26,7 @@ module.exports = async (req, res) => {
     const text = message.text;
 
     // Handle /start command
-    if (text === '/start') {
+    if (text === '/start' || text === '/play' || text === '/game') {
       const welcomeMessage = `🎮 <b>Welcome to TON Blast, ${username}!</b>\n\n` +
         `💎 <b>The Ultimate Crypto Arcade on TON Blockchain!</b>\n\n` +
         `⭐ <b>What makes us unique:</b>\n` +
