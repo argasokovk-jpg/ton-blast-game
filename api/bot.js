@@ -46,8 +46,7 @@ module.exports = async (req, res) => {
           keyboard: [
             [{ text: '🎯 Launch TON Blast Game' }],
             [{ text: '⭐ Premium Features' }, { text: '📊 How to Play' }],
-            [{ text: '💰 How to Earn' }, { text: '🏆 Leaderboard' }],
-            [{ text: '📈 Game Statistics' }, { text: '💸 Withdrawal Info' }]
+            [{ text: '💰 How to Earn' }, { text: '🏆 Leaderboard' }]
           ],
           resize_keyboard: true,
           one_time_keyboard: false
@@ -225,63 +224,6 @@ module.exports = async (req, res) => {
       await sendTelegramMessage(response);
     }
 
-    else if (text === '📈 Game Statistics') {
-      const statsMessage = `📊 <b>TON Blast Global Statistics</b>\n\n` +
-        `• 🎮 <b>Total Games Played:</b> 1,000+\n` +
-        `• 💰 <b>Biggest Single Win:</b> 47.8 TON\n` +
-        `• ⭐ <b>Premium Users:</b> 28%\n` +
-        `• 👥 <b>Active Players:</b> 250+\n` +
-        `• 🏆 <b>Top Score:</b> 540 coins\n\n` +
-        `🎯 <b>Current Jackpot:</b> 150 TON\n\n` +
-        `🚀 <b>Join the action now!</b>`;
-
-      const response = {
-        method: 'sendMessage',
-        chat_id: chatId,
-        text: statsMessage,
-        parse_mode: 'HTML',
-        reply_markup: {
-          inline_keyboard: [[
-            {
-              text: '🎮 Play & Compete',
-              web_app: { url: 'https://ton-blast-game.vercel.app' }
-            }
-          ]]
-        }
-      };
-      await sendTelegramMessage(response);
-    }
-
-    else if (text === '💸 Withdrawal Info') {
-      const withdrawalMessage = `💸 <b>Withdrawal Information</b>\n\n` +
-        `💰 <b>Payout Rates:</b>\n` +
-        `• 1000 coins = 4.5 TON\n` +
-        `• Platform commission: 10%\n` +
-        `• You receive: 4.05 TON\n\n` +
-        `⚡ <b>Withdrawal Process:</b>\n` +
-        `1. Collect 1000+ coins\n` +
-        `2. Click "Withdraw Funds" in game\n` +
-        `3. Confirm transaction\n` +
-        `4. Receive TON in your wallet\n\n` +
-        `✅ <b>Instant processing - no delays!</b>`;
-
-      const response = {
-        method: 'sendMessage',
-        chat_id: chatId,
-        text: withdrawalMessage,
-        parse_mode: 'HTML',
-        reply_markup: {
-          inline_keyboard: [[
-            {
-              text: '🎮 Start Earning',
-              web_app: { url: 'https://ton-blast-game.vercel.app' }
-            }
-          ]]
-        }
-      };
-      await sendTelegramMessage(response);
-    }
-
     // Handle referral links
     else if (text && text.includes('/start ref_')) {
       const refCode = text.split('ref_')[1];
@@ -299,8 +241,7 @@ module.exports = async (req, res) => {
           keyboard: [
             [{ text: '🎯 Launch TON Blast Game' }],
             [{ text: '⭐ Premium Features' }, { text: '📊 How to Play' }],
-            [{ text: '💰 How to Earn' }, { text: '🏆 Leaderboard' }],
-            [{ text: '📈 Game Statistics' }, { text: '💸 Withdrawal Info' }]
+            [{ text: '💰 How to Earn' }, { text: '🏆 Leaderboard' }]
           ],
           resize_keyboard: true,
           one_time_keyboard: false
@@ -332,9 +273,7 @@ module.exports = async (req, res) => {
         `• <b>⭐ Premium</b> - Premium features and benefits\n` +
         `• <b>📊 How to Play</b> - Game instructions and rules\n` +
         `• <b>💰 How to Earn</b> - Earning strategies and tips\n` +
-        `• <b>🏆 Leaderboard</b> - Top players and competition\n` +
-        `• <b>📈 Statistics</b> - Global game statistics\n` +
-        `• <b>💸 Withdrawal</b> - Payout information\n\n` +
+        `• <b>🏆 Leaderboard</b> - Top players and competition\n\n` +
         `🚀 <b>Ready to start earning TON?</b>`;
 
       const response = {
@@ -346,8 +285,7 @@ module.exports = async (req, res) => {
           keyboard: [
             [{ text: '🎯 Launch TON Blast Game' }],
             [{ text: '⭐ Premium Features' }, { text: '📊 How to Play' }],
-            [{ text: '💰 How to Earn' }, { text: '🏆 Leaderboard' }],
-            [{ text: '📈 Game Statistics' }, { text: '💸 Withdrawal Info' }]
+            [{ text: '💰 How to Earn' }, { text: '🏆 Leaderboard' }]
           ],
           resize_keyboard: true,
           one_time_keyboard: false
